@@ -1,5 +1,5 @@
 {
-  "name": "uni-preset-vue",
+  "name": "vue-uniapp-template",
   "version": "0.0.0",
   "scripts": {
     "dev:app": "uni -p app",
@@ -42,7 +42,30 @@
     "build:quickapp-webview-union": "uni build -p quickapp-webview-union",
     "type-check": "vue-tsc --noEmit",
     "lint:eslint": "eslint --fix ./src",
-    "lint:stylelint": "stylelint  \"**/*.{css,scss,vue,html}\" --fix"
+    "lint:stylelint": "stylelint  \"**/*.{css,scss,vue,html}\" --fix",
+    "lint:lint-staged": "lint-staged",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{cjs,json}": [
+      "prettier --write"
+    ],
+    "*.{vue,html}": [
+      "eslint --fix",
+      "prettier --write",
+      "stylelint --fix"
+    ],
+    "*.{scss,css}": [
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.md": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4020420240722002",
@@ -76,6 +99,8 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-vue": "^9.28.0",
     "globals": "^15.9.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
     "postcss": "^8.4.47",
     "postcss-html": "^1.7.0",
     "postcss-scss": "^4.0.9",
