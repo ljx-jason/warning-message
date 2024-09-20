@@ -6,13 +6,8 @@ onLaunch(() => {
 onShow(() => {
   console.log("App Hide");
 });
+onHide(() => {
+  console.log("App Hide");
+});
 </script>
-<style lang="scss">
-.container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  padding: 1px;
-  background-color: #f5f5f5;
-}
-</style>
+<style lang="scss" scoped></style>

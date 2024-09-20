@@ -1,25 +1,18 @@
 <template>
-  <view class="content">
+  <view class="flex-center flex-col">
     <image class="logo" src="/static/logo.png" />
-    <view class="text-area">
-      <text class="title">{{ title }}</text>
+    <view>
+      <text class="text-red font-bold text-lg">{{ title }}</text>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-const title = ref("Hello");
+const title = ref("Hello YouLai APP");
 </script>
 
 <style>
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
 .logo {
   width: 200rpx;
   height: 200rpx;
@@ -27,15 +20,5 @@ const title = ref("Hello");
   margin-right: auto;
   margin-bottom: 50rpx;
   margin-left: auto;
-}
-
-.text-area {
-  display: flex;
-  justify-content: center;
-}
-
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
 }
 </style>
