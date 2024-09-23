@@ -13,9 +13,15 @@
       }
     },
     {
-      "path": "pages/my/index",
+      "path": "pages/profile/index",
       "style": {
         "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "登录"
       }
     }
   ],
@@ -43,7 +49,7 @@
         "selectedIconPath": "static/tabbar/workbench-active.png"
       },
       {
-        "pagePath": "pages/my/index",
+        "pagePath": "pages/profile/index",
         "text": "我的",
         "iconPath": "static/tabbar/my.png",
         "selectedIconPath": "static/tabbar/my-active.png"

@@ -12,9 +12,8 @@ export default {
   ],
   shortcuts: [
     {
-      "border-base": "border border-gray-500_10",
       "flex-center": "flex justify-center items-center",
-      "flex-x-center": "flex justify-center",
+      "flex-col": "flex flex-col",
     },
   ],
 

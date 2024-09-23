@@ -4,6 +4,7 @@ import tseslint from "typescript-eslint"; // TypeScript 配置
 import pluginVue from "eslint-plugin-vue"; // Vue 配置
 
 export default [
+  { extends: ["./.eslintrc-auto-import.json"] },
   { files: ["**/*.{js,mjs,cjs,ts,vue}"] }, // 校验的文件类型
   { languageOptions: { globals: globals.browser } }, // 设置浏览器环境的全局变量
   pluginJs.configs.recommended, // JavaScript 推荐配置
