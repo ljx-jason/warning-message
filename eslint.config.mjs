@@ -3,10 +3,33 @@ import pluginJs from "@eslint/js"; // JavaScript 的推荐配置
 import tseslint from "typescript-eslint"; // TypeScript 配置
 import pluginVue from "eslint-plugin-vue"; // Vue 配置
 
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+
+// 动态读取 .eslintrc-auto-import.json 文件内容
+const autoImportConfig = JSON.parse(
+  readFileSync(
+    resolve(dirname(fileURLToPath(import.meta.url)), ".eslintrc-auto-import.json"),
+    "utf-8",
+  ),
+);
+
 export default [
-  { extends: ["./.eslintrc-auto-import.json"] },
   { files: ["**/*.{js,mjs,cjs,ts,vue}"] }, // 校验的文件类型
-  { languageOptions: { globals: globals.browser } }, // 设置浏览器环境的全局变量
+  {
+    // 语言选项配置，定义全局变量
+    languageOptions: {
+      globals: {
+        ...globals.browser, // 浏览器变量 (window, document 等)
+        ...globals.node, // Node.js 变量 (process, require 等)
+        ...autoImportConfig.globals, // 自动导入的全局变量
+        ...{
+          uni: "readonly", // uni-app 全局对象
+        },
+      },
+    },
+  },
   pluginJs.configs.recommended, // JavaScript 推荐配置
   ...tseslint.configs.recommended, // TypeScript 推荐配置
   ...pluginVue.configs["flat/essential"], // Vue 推荐配置
@@ -36,10 +59,10 @@ export default [
       "no-trailing-spaces": "error", // 不允许行尾有空格
 
       // TypeScript 规则
-      "@typescript-eslint/ban-types": "off", // 禁用 ban-types 规则
-      "@typescript-eslint/no-empty-interface": "off", // 禁用 no-empty-interface 规则，允许空接口声明
       "@typescript-eslint/no-explicit-any": "off", // 禁用 no-explicit-any 规则，允许使用 any 类型
       "@typescript-eslint/explicit-function-return-type": "off", // 不强制要求函数必须明确返回类型
+      "@typescript-eslint/no-empty-interface": "off", // 禁用 no-empty-interface 规则，允许空接口声明
+      "@typescript-eslint/no-empty-object-type": "off", // 允许空对象类型
 
       // Vue 规则
       "vue/multi-word-component-names": "off", // 关闭多单词组件名称的限制

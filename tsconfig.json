@@ -1,5 +1,12 @@
 {
   "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "esnext",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
@@ -8,5 +15,6 @@
     "lib": ["esnext", "dom"],
     "types": ["@dcloudio/types"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "exclude": ["node_modules", "dist"]
 }

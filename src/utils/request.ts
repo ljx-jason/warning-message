@@ -1,12 +1,10 @@
-const API_HOST = "https://api.youlai.tech";
-
 export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
   const token = uni.getStorageSync("token"); // 从本地缓存获取 token
 
   return new Promise((resolve, reject) => {
     uni.request({
       ...options,
-      url: `${API_HOST}${options.url}`,
+      url: `${import.meta.env.VITE_APP_BASE_API}${options.url}`,
       header: {
         ...options.header,
         Authorization: token,
