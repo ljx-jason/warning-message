@@ -20,8 +20,6 @@ export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => 
       },
     },
     plugins: [
-      uni(),
-
       // https://github.com/unocss/unocss
       UnoCss(),
 
@@ -32,6 +30,7 @@ export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => 
           enabled: true,
         },
       }),
+      uni(),
     ],
   };
 });
