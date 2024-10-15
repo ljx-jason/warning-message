@@ -1,42 +1,23 @@
-import globals from "globals"; // 全局变量配置
-import pluginJs from "@eslint/js"; // JavaScript 的推荐配置
-import tseslint from "typescript-eslint"; // TypeScript 配置
-import pluginVue from "eslint-plugin-vue"; // Vue 配置
+import globals from "globals";
+import js from "@eslint/js";
 
-import { readFileSync } from "fs";
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
+// ESLint 核心插件
+import pluginVue from "eslint-plugin-vue";
+import pluginTypeScript from "@typescript-eslint/eslint-plugin";
 
-// 动态读取 .eslintrc-auto-import.json 文件内容
-const autoImportConfig = JSON.parse(
-  readFileSync(
-    resolve(dirname(fileURLToPath(import.meta.url)), ".eslintrc-auto-import.json"),
-    "utf-8",
-  ),
-);
+// Prettier 插件及配置
+import configPrettier from "eslint-config-prettier";
+import pluginPrettier from "eslint-plugin-prettier";
 
+// 解析器
+import * as parserVue from "vue-eslint-parser";
+import * as parserTypeScript from "@typescript-eslint/parser";
+
+// 定义 ESLint 配置
 export default [
-  { files: ["**/*.{js,mjs,cjs,ts,vue}"] }, // 校验的文件类型
+  // 通用 JavaScript 配置
   {
-    // 语言选项配置，定义全局变量
-    languageOptions: {
-      globals: {
-        ...globals.browser, // 浏览器变量 (window, document 等)
-        ...globals.node, // Node.js 变量 (process, require 等)
-        ...autoImportConfig.globals, // 自动导入的全局变量
-        ...{
-          uni: "readonly", // uni-app 全局对象
-        },
-      },
-    },
-  },
-  pluginJs.configs.recommended, // JavaScript 推荐配置
-  ...tseslint.configs.recommended, // TypeScript 推荐配置
-  ...pluginVue.configs["flat/essential"], // Vue 推荐配置
-  { files: ["**/*.vue"], languageOptions: { parserOptions: { parser: tseslint.parser } } }, // 对 .vue 文件使用 TypeScript 解析器
-
-  // 添加忽略的文件或目录
-  {
+    ...js.configs.recommended,
     ignores: [
       "/dist",
       "/public",
@@ -46,28 +27,123 @@ export default [
       "**/*.tsbuildinfo",
       "/src/manifest.json",
     ],
+    languageOptions: {
+      globals: {
+        ...globals.browser, // 浏览器变量 (window, document 等)
+        ...globals.node, // Node.js 变量 (process, require 等)
+      },
+    },
+    plugins: {
+      prettier: pluginPrettier,
+    },
+    rules: {
+      ...configPrettier.rules,
+      ...pluginPrettier.configs.recommended.rules,
+      "no-debug": "off", // 禁止 debugger
+      "no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ], // 允许未使用的变量，以 _ 开头的变量不检查
+      "prettier/prettier": [
+        "error",
+        {
+          endOfLine: "auto", // 自动识别换行符
+        },
+      ],
+    },
   },
 
-  // 自定义规则
+  // TypeScript 配置
   {
+    files: ["**/*.?([cm])ts"],
+    languageOptions: {
+      parser: parserTypeScript,
+      parserOptions: {
+        sourceType: "module",
+      },
+    },
+    plugins: {
+      "@typescript-eslint": pluginTypeScript,
+    },
     rules: {
-      quotes: ["error", "double"], // 强制使用双引号
-      "quote-props": ["error", "always"], // 强制对象的属性名使用引号
-      semi: ["error", "always"], // 要求使用分号
-      indent: ["error", 2], // 使用两个空格进行缩进
-      "no-multiple-empty-lines": ["error", { max: 1 }], // 不允许多个空行
-      "no-trailing-spaces": "error", // 不允许行尾有空格
+      ...pluginTypeScript.configs.strict.rules,
+      "@typescript-eslint/ban-types": "off", // 禁止特定类型
+      "@typescript-eslint/no-redeclare": "error", // 禁止重复声明
+      "@typescript-eslint/ban-ts-comment": "off", // 禁止特定注释
+      "@typescript-eslint/no-explicit-any": "off", // 禁止使用 any
+      "@typescript-eslint/prefer-as-const": "warn", // 使用 as const 替代 as 'const'
+      "@typescript-eslint/no-empty-function": "off", // 禁止空函数
+      "@typescript-eslint/no-non-null-assertion": "off", // 禁止非空断言
+      "@typescript-eslint/no-import-type-side-effects": "error", // 禁止导入类型产生副作用
+      "@typescript-eslint/explicit-module-boundary-types": "off", // 显式函数返回类型
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { disallowTypeAnnotations: false, fixStyle: "inline-type-imports" },
+      ], // 一致的类型导入
+      "@typescript-eslint/prefer-literal-enum-member": ["error", { allowBitwiseExpressions: true }], // 使用字面量枚举成员
+      "@typescript-eslint/no-empty-object-type": "off", // 禁止空对象类型
+    },
+  },
 
-      // TypeScript 规则
-      "@typescript-eslint/no-explicit-any": "off", // 禁用 no-explicit-any 规则，允许使用 any 类型
-      "@typescript-eslint/explicit-function-return-type": "off", // 不强制要求函数必须明确返回类型
-      "@typescript-eslint/no-empty-interface": "off", // 禁用 no-empty-interface 规则，允许空接口声明
-      "@typescript-eslint/no-empty-object-type": "off", // 允许空对象类型
+  // TypeScript 声明文件的特殊配置
+  {
+    files: ["**/*.d.ts"],
+    rules: {
+      "eslint-comments/no-unlimited-disable": "off",
+      "unused-imports/no-unused-vars": "off",
+    },
+  },
 
-      // Vue 规则
-      "vue/multi-word-component-names": "off", // 关闭多单词组件名称的限制
-      "vue/html-indent": ["error", 2], // Vue 模板中的 HTML 缩进使用两个空格
-      "vue/no-v-html": "off", // 允许使用 v-html (根据实际项目需要)
+  // JavaScript 配置（包含 commonjs）
+  {
+    files: ["**/*.?([cm])js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off", // 禁止 require
+      "@typescript-eslint/no-var-requires": "off", // 禁止 require
+    },
+  },
+
+  // Vue 文件配置
+  {
+    files: ["**/*.vue"],
+    languageOptions: {
+      parser: parserVue,
+      parserOptions: {
+        extraFileExtensions: [".vue"],
+        parser: "@typescript-eslint/parser",
+        sourceType: "module",
+      },
+    },
+    plugins: {
+      vue: pluginVue,
+    },
+    processor: pluginVue.processors[".vue"],
+    rules: {
+      ...pluginVue.configs.base.rules, // Vue 基础配置
+      ...pluginVue.configs["vue3-essential"].rules, // Vue3 基础配置
+      ...pluginVue.configs["vue3-recommended"].rules, // Vue3 推荐配置
+      "no-undef": "off",
+      "no-unused-vars": "off",
+      "vue/no-v-html": "off",
+      "vue/require-default-prop": "off",
+      "vue/require-explicit-emits": "off",
+      "vue/multi-word-component-names": "off",
+      "vue/no-setup-props-reactivity-loss": "off",
+      "vue/html-self-closing": [
+        "error",
+        {
+          html: {
+            void: "always",
+            normal: "always",
+            component: "always",
+          },
+          svg: "always",
+          math: "always",
+        },
+      ], // 自闭合标签
     },
   },
 ];

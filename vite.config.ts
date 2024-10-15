@@ -1,4 +1,4 @@
-import { defineConfig, UserConfig, ConfigEnv, loadEnv } from "vite";
+import { defineConfig, type UserConfig, type ConfigEnv, loadEnv } from "vite";
 import uni from "@dcloudio/vite-plugin-uni";
 import AutoImport from "unplugin-auto-import/vite";
 

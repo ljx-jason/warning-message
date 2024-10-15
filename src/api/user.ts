@@ -2,19 +2,19 @@ import request from "@/utils/request";
 
 const USER_BASE_URL = "/api/v1/users";
 
-class UserAPI {
+const UserAPI = {
   /**
    * 获取当前登录用户信息
    *
    * @returns 登录用户昵称、头像信息，包括角色和权限
    */
-  static getUserInfo(): Promise<UserInfo> {
+  getUserInfo(): Promise<UserInfo> {
     return request<UserInfo>({
       url: `${USER_BASE_URL}/me`,
       method: "GET",
     });
-  }
-}
+  },
+};
 export default UserAPI;
 
 /** 登录用户信息 */

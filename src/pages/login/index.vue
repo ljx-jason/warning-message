@@ -1,40 +1,78 @@
 <template>
-  <view class="flex-col items-center">
-    <input v-model="username" placeholder="请输入用户名" />
-    <input v-model="password" placeholder="请输入密码" type="password" />
-    <button class="mt-5" @click="handleLogin">登录</button>
+  <view class="login">
+    <image class="logo" src="@/static/logo.png" style="width: 100px; height: 100px" />
+    <view class="mt-10 flex-center">
+      <wd-form ref="loginFormRef" :model="loginFormData">
+        <wd-cell-group border>
+          <wd-input
+            v-model="loginFormData.username"
+            label="用户名"
+            label-width="100px"
+            prop="username"
+            clearable
+            placeholder="请输入用户名"
+            :rules="[{ required: true, message: '请填写用户名' }]"
+          />
+          <wd-input
+            v-model="loginFormData.password"
+            label="密码"
+            label-width="100px"
+            prop="password"
+            show-password
+            clearable
+            placeholder="请输入密码"
+            :rules="[{ required: true, message: '请填写密码' }]"
+          />
+        </wd-cell-group>
+        <view class="footer">
+          <wd-button size="large" type="primary" block @click="handleLogin">提交</wd-button>
+        </view>
+      </wd-form>
+    </view>
   </view>
 </template>
 
 <script lang="ts" setup>
+import { type LoginFormData } from "@/api/auth";
 import { useUserStore } from "@/store/modules/user";
 
-// 登录表单
-const username = ref("admin");
-const password = ref("123456");
+const loginFormRef = ref();
 
-// 使用 pinia
+const loginFormData = ref<LoginFormData>({
+  username: "admin",
+  password: "123456",
+});
+
 const userStore = useUserStore();
 
 // 登录处理
-const handleLogin = async () => {
-  await userStore.login(username.value, password.value);
-
-  if (userStore.token) {
-    await userStore.getUserInfo(); // 登录成功后获取用户信息
-    uni.showToast({ title: "登录成功", icon: "success" });
-    uni.navigateBack(); // 登录成功后返回上一页
-  } else {
-    uni.showToast({ title: "登录失败", icon: "none" });
-  }
+const handleLogin = () => {
+  loginFormRef.value
+    .validate()
+    .then(async ({ valid }: { valid: boolean }) => {
+      if (valid) {
+        try {
+          userStore.login(loginFormData.value).then(() => {
+            uni.showToast({ title: "登录成功", icon: "success" });
+            uni.navigateBack();
+          });
+        } catch (error: any) {
+          console.log("登录失败", error.message);
+        }
+      }
+    })
+    .error(({ errors }: { errors: any }) => {
+      console.log("errors", errors);
+    });
 };
 </script>
 
-<style scoped>
-input {
-  width: 80%;
-  padding: 10px;
-  margin-top: 16px;
-  border: 1px solid #ccc;
+<style lang="scss" scoped>
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 50px);
 }
 </style>

@@ -1,4 +1,4 @@
-import { getToken, clearToken } from "@/utils/auth";
+import { getToken } from "@/utils/cache";
 import { ResultCodeEnum } from "@/enums/ResultCodeEnum";
 
 export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
@@ -14,7 +14,7 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
       url: `${baseApi}${options.url}`,
       header: {
         ...options.header,
-        Authorization: getToken() ? `Bearer ${getToken()}` : "", // 添加 Bearer 前缀
+        Authorization: getToken() ? `Bearer ${getToken()}` : "",
       },
       success: (response) => {
         console.log("success response", response);
@@ -32,8 +32,6 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
             duration: 2000,
           });
 
-          clearToken();
-
           // 此处不强制跳转到登录页，可以让调用方决定下一步操作
           reject({
             message: resData.msg || "令牌无效或过期",
@@ -46,7 +44,6 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
           uni.showToast({
             title: resData.msg || "业务处理失败",
             icon: "none",
-            duration: 2000,
           });
           reject({
             message: resData.msg || "业务处理失败",

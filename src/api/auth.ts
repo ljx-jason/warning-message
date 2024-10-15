@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-class AuthAPI {
+const AuthAPI = {
   /**
    * 登录接口
    *
@@ -8,37 +8,40 @@ class AuthAPI {
    * @param password 密码
    * @returns 返回 token
    */
-  static login(username: string, password: string): Promise<LoginResult> {
+  login(data: LoginFormData): Promise<LoginResult> {
+    console.log("data", data);
     return request<LoginResult>({
       url: "/api/v1/auth/login",
       method: "POST",
-      data: {
-        username,
-        password,
-      },
+      data: data,
       header: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
-  }
+  },
 
   /**
    * 登出接口
    */
-  static logout(): Promise<void> {
-    return request<void>({
+  logout(): Promise<void> {
+    return request({
       url: "/api/v1/auth/logout",
       method: "DELETE",
     });
-  }
-}
+  },
+};
 
 export default AuthAPI;
 
 /** 登录响应 */
 export interface LoginResult {
   /** 访问token */
-  accessToken?: string;
+  accessToken: string;
   /** token 类型 */
   tokenType?: string;
+}
+
+export interface LoginFormData {
+  username: string;
+  password: string;
 }
