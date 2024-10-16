@@ -30,6 +30,12 @@
       "style": {
         "navigationBarTitleText": "登录"
       }
+    },
+    {
+      "path": "pages/mine/profile/index",
+      "style": {
+        "navigationBarTitleText": "个人资料"
+      }
     }
   ],
   "globalStyle": {

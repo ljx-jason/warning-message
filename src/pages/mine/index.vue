@@ -7,13 +7,18 @@
           class="w-100rpx h-100rpx rounded-full"
           :src="isLogin ? userInfo!.avatar : defaultAvatar"
         />
-        <text class="ml-20rpx text-32rpx">{{
-          isLogin ? userInfo!.nickname : "您还未登录，请先登录"
-        }}</text>
+        <view class="ml-20rpx text-32rpx">
+          <text v-if="isLogin">{{ userInfo!.nickname }}</text>
+          <view v-else @click="goToLoginPage">
+            <text>您还未登录，请先</text
+            ><text class="cursor-pointer"> 登录 <wd-icon name="arrow-right" /> </text>
+          </view>
+        </view>
       </view>
       <view>
-        <text v-if="isLogin" @click="goToLoginPage"> 个人信息 <wd-icon name="arrow-right" /> </text>
-        <text v-else @click="goToLoginPage"> 去登录 <wd-icon name="arrow-right" /> </text>
+        <text v-if="isLogin" class="cursor-pointer" @click="goToProfile">
+          个人信息 <wd-icon name="arrow-right" />
+        </text>
       </view>
     </view>
     <view class="relative -top-[50px] p-[40rpx]">
@@ -36,7 +41,7 @@
           <wd-cell title="关于我们" icon="setting" @click="goToAbout">
             <wd-icon name="arrow-right" />
           </wd-cell>
-          <wd-cell title="应用设置" icon="setting" @click="goToSettings">
+          <wd-cell title="应用设置" icon="setting" clickable @click="goToSettings">
             <wd-icon name="arrow-right" />
           </wd-cell>
 
@@ -65,7 +70,7 @@ const goToLoginPage = () => {
 };
 
 const goToProfile = () => {
-  uni.navigateTo({ url: "/pages/profile/index" });
+  uni.navigateTo({ url: "/pages/mine/profile/index" });
 };
 const goToEditProfile = () => {
   uni.navigateTo({ url: "/pages/edit-profile/index" });
@@ -88,9 +93,14 @@ const handleLogout = () => {
 </script>
 
 <style lang="scss" scoped>
+/* stylelint-disable selector-type-no-unknown */
+page {
+  background: #f8f8f8;
+}
+/* stylelint-enable selector-type-no-unknown */
+
 .mine {
   height: 100%;
-  background: #f5f2f2;
   .header {
     display: flex;
     align-items: center;
