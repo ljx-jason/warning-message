@@ -1,4 +1,4 @@
-import { getToken } from "@/utils/cache";
+import { getToken, clearAll } from "@/utils/cache";
 import { ResultCodeEnum } from "@/enums/ResultCodeEnum";
 
 export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
@@ -26,21 +26,14 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
         }
         // 令牌失效或过期处理
         else if (resData.code === ResultCodeEnum.TOKEN_INVALID) {
-          uni.showToast({
-            title: resData.msg || "令牌无效或过期",
-            icon: "none",
-            duration: 2000,
+          console.log("令牌失效或过期处理");
+          clearAll();
+          // 跳转到登录页
+          uni.reLaunch({
+            url: "/pages/login/index",
           });
-
-          // 此处不强制跳转到登录页，可以让调用方决定下一步操作
-          reject({
-            message: resData.msg || "令牌无效或过期",
-            code: resData.code,
-            action: "TOKEN_INVALID", // 提供一个 action 用于后续调用方判断
-          });
-        }
-        // 其他业务处理失败
-        else {
+        } else {
+          // 其他业务处理失败
           uni.showToast({
             title: resData.msg || "业务处理失败",
             icon: "none",

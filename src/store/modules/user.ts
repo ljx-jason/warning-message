@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import AuthAPI, { type LoginFormData } from "@/api/auth";
-import UserAPI, { type UserInfo } from "@/api/user";
+import UserAPI, { type UserInfo } from "@/api/system/user";
 import { setToken, getUserInfo, setUserInfo, clearAll } from "@/utils/cache";
 
 export const useUserStore = defineStore("user", () => {
@@ -12,21 +12,28 @@ export const useUserStore = defineStore("user", () => {
       AuthAPI.login(data)
         .then((data) => {
           setToken(data.accessToken);
-          getInfo();
           resolve(data);
         })
         .catch((error) => {
           console.error("登录失败", error);
-          reject(error); // 将错误抛出
+          reject(error);
         });
     });
   };
 
   // 获取用户信息
   const getInfo = () => {
-    UserAPI.getUserInfo().then((data) => {
-      setUserInfo(data);
-      userInfo.value = data;
+    return new Promise((resolve, reject) => {
+      UserAPI.getUserInfo()
+        .then((data) => {
+          setUserInfo(data);
+          userInfo.value = data;
+          resolve(data);
+        })
+        .catch((error) => {
+          console.error("获取用户信息失败", error);
+          reject(error);
+        });
     });
   };
 
@@ -46,6 +53,6 @@ export const useUserStore = defineStore("user", () => {
     userInfo,
     login,
     logout,
-    getUserInfo,
+    getInfo,
   };
 });

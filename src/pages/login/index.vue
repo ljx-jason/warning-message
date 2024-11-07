@@ -47,23 +47,29 @@ const userStore = useUserStore();
 
 // 登录处理
 const handleLogin = () => {
-  loginFormRef.value
-    .validate()
-    .then(async ({ valid }: { valid: boolean }) => {
-      if (valid) {
-        try {
-          userStore.login(loginFormData.value).then(() => {
-            uni.showToast({ title: "登录成功", icon: "success" });
-            uni.navigateBack();
+  loginFormRef.value.validate().then(async ({ valid }: { valid: boolean }) => {
+    if (valid) {
+      try {
+        await userStore.login(loginFormData.value); // 等待登录和获取用户信息完成
+        await userStore.getInfo(); // 等待用户信息获取完成
+        uni.showToast({ title: "登录成功", icon: "success" });
+        const pages = getCurrentPages(); // 获取当前的页面栈
+
+        console.log("pages", pages);
+        if (pages.length > 1) {
+          // 如果页面栈中有多个页面，则可以返回上一页
+          uni.navigateBack();
+        } else {
+          // 如果页面栈中只有一个页面（通常是首页），则可以跳转到指定页面，避免 navigateBack 无法返回的问题
+          uni.reLaunch({
+            url: "/pages/index/index", // 替换为你想要跳转的页面路径
           });
-        } catch (error: any) {
-          console.log("登录失败", error.message);
         }
+      } catch (error: any) {
+        console.log("登录失败", error.message);
       }
-    })
-    .error(({ errors }: { errors: any }) => {
-      console.log("errors", errors);
-    });
+    }
+  });
 };
 </script>
 

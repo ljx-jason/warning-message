@@ -36,6 +36,18 @@
       "style": {
         "navigationBarTitleText": "个人资料"
       }
+    },
+    {
+      "path": "pages/work/user/index",
+      "style": {
+        "navigationBarTitleText": "用户管理"
+      }
+    },
+    {
+      "path": "pages/work/user/edit",
+      "style": {
+        "navigationBarTitleText": "编辑用户"
+      }
     }
   ],
   "globalStyle": {
