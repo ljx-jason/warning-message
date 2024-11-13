@@ -72,6 +72,7 @@ const gridList = reactive([
       {
         icon: "/static/icons/log.png",
         title: "日志管理",
+        url: "/pages/work/log/index",
       },
       {
         icon: "/static/icons/performance.png",
