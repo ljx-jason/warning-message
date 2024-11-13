@@ -15,7 +15,7 @@ import * as parserTypeScript from "@typescript-eslint/parser";
 
 // 定义 ESLint 配置
 export default [
-  // 通用 JavaScript/TypeScript 配置
+  // 通用 JavaScript 配置
   {
     ...js.configs.recommended,
     ignores: [
@@ -39,11 +39,11 @@ export default [
     rules: {
       ...configPrettier.rules,
       ...pluginPrettier.configs.recommended.rules,
-      "no-debug": "off", // 允许使用 debugger
+      "no-debug": "off", // 禁止 debugger
       "prettier/prettier": [
         "error",
         {
-          endOfLine: "auto", // 解决换行符冲突
+          endOfLine: "auto", // 自动识别换行符
         },
       ],
     },
@@ -62,7 +62,7 @@ export default [
       "@typescript-eslint": pluginTypeScript,
     },
     rules: {
-      ...pluginTypeScript.configs.recommended.rules,
+      ...pluginTypeScript.configs.strict.rules,
       "@typescript-eslint/no-explicit-any": "off", // 允许使用 any
       "@typescript-eslint/no-empty-function": "off", // 允许空函数
       "@typescript-eslint/no-empty-object-type": "off", // 允许空对象类型
@@ -77,8 +77,9 @@ export default [
   {
     files: ["**/*.d.ts"],
     rules: {
-      "eslint-comments/no-unlimited-disable": "off", // 关闭 eslint 注释相关规则
-      "unused-imports/no-unused-vars": "off", // 忽略未使用的导入
+      "eslint-comments/no-unlimited-disable": "off",
+      "unused-imports/no-unused-vars": "off",
+      "@typescript-eslint/ban-ts-comment": "off", // 允许使用 @ts-nocheck 注释
     },
   },
 

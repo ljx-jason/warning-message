@@ -1,36 +1,42 @@
 <template>
   <view class="user">
-    <wd-table :data="dataList" @sort-method="handleSort">
-      <wd-table-col prop="username" label="用户名" :fixed="true" width="150rpx" :sortable="true" />
-      <wd-table-col prop="nickname" label="昵称" />
-      <wd-table-col prop="" label="性别" width="120rpx">
-        <template #value="{ row }">
-          <wd-tag v-if="row.gender == 1" type="primary" mark plain>男</wd-tag>
-          <wd-tag v-else-if="row.gender == 2" type="danger" mark plain>女</wd-tag>
-          <wd-tag v-else mark plain>未知</wd-tag>
-        </template>
-      </wd-table-col>
-      <wd-table-col prop="deptName" label="部门" />
-      <wd-table-col prop="mobile" width="220rpx" label="手机号码" />
-      <wd-table-col prop="" label="状态" width="120rpx">
-        <template #value="{ row }">
-          <wd-tag v-if="row.status == 1" type="success" mark plain>正常</wd-tag>
-          <wd-tag v-else type="danger" mark plain>停用</wd-tag>
-        </template>
-      </wd-table-col>
-      <wd-table-col prop="createTime" label="创建时间" />
-      <wd-table-col prop="" :fixed="true" label="操作">
-        <template #value="{ row }">
-          <wd-text type="primary" class="cursor-pointer" text="编辑" @click="handleEdit(row)" />
-          <wd-text
-            type="error"
-            class="ml-2 cursor-pointer"
-            text="删除"
-            @click="handleDelete(row)"
-          />
-        </template>
-      </wd-table-col>
-    </wd-table>
+    <wd-search v-model="queryParams.keywords" :maxlength="10" class="mb-2" />
+
+    <wd-card v-for="item in dataList">
+      <template #title>
+        <view class="flex justify-between">
+          <view class="flex items-center">
+            <image class="w-100rpx h-100rpx rounded-full" :src="item.avatar" />
+            <view class="ml-2">
+              <view class="font-bold">{{ item.nickname }}</view>
+              <view class="text-12px mt-1">{{ item.deptName }}</view>
+            </view>
+          </view>
+          <view>{{ item.createTime }}</view>
+        </view>
+      </template>
+
+      <view>
+        <view class="flex items-center">
+          <wd-icon name="usergroup" size="16" class="mr-1" />
+          <view>{{ item.roleNames }}</view>
+        </view>
+
+        <view class="flex items-center">
+          <wd-icon name="mobile" size="16" class="mr-1" />
+          <view>{{ item.mobile }}</view>
+        </view>
+        <view class="flex items-center">
+          <wd-icon name="mail" size="16" class="mr-1" />
+          <view>{{ item.email }}</view>
+        </view>
+      </view>
+
+      <template #footer>
+        <wd-button size="small" plain>编辑</wd-button>
+        <wd-button type="warning" size="small" plain class="ml-2">删除</wd-button>
+      </template>
+    </wd-card>
 
     <wd-loadmore :state="state" @reload="loadmore" />
   </view>
@@ -40,7 +46,7 @@ import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
 import UserAPI, { type UserPageQuery, UserPageVO } from "@/api/system/user";
 
 const state = ref<LoadMoreState>("loading"); // 加载状态 loading, finished:, error
-const dataList = ref<Record<string, any>[]>([]);
+const dataList = ref<UserPageVO[]>([]);
 
 const queryParams: UserPageQuery = {
   pageNum: 1,

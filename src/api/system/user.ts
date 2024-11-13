@@ -21,7 +21,7 @@ const UserAPI = {
    * @param queryParams 查询参数
    */
   getPage(queryParams: UserPageQuery) {
-    return request<PageResult<Record<string, any>[]>>({
+    return request<PageResult<UserPageVO[]>>({
       url: `${USER_BASE_URL}/page`,
       method: "GET",
       data: queryParams,
