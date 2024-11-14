@@ -1,5 +1,506 @@
 <template>
   <view>
-    <text>profile</text>
+    <view v-if="userProfile" class="profile-card">
+      <wd-cell-group border>
+        <wd-cell class="avatar-cell" title="头像" center is-link>
+          <view class="avatar">
+            <view v-if="!userProfile.avatar" class="img" @click="avatarUpload">
+              <wd-icon name="fill-camera" custom-class="img-icon" />
+            </view>
+            <wd-img
+              v-if="userProfile.avatar"
+              round
+              width="80px"
+              height="80px"
+              :src="userProfile.avatar"
+              mode="aspectFit"
+              custom-class="profile-img"
+              @click="avatarUpload"
+            />
+          </view>
+        </wd-cell>
+        <wd-cell
+          title="昵称"
+          :value="userProfile.nickname"
+          is-link
+          @click="handleOpenDialog(DialogType.ACCOUNT)"
+        />
+        <wd-cell
+          title="性别"
+          :value="userProfile.gender === 1 ? '男' : userProfile.gender === 2 ? '女' : '未知'"
+          is-link
+          @click="handleOpenDialog(DialogType.ACCOUNT)"
+        />
+        <wd-cell title="用户名" :value="userProfile.username" />
+        <wd-cell title="部门" :value="userProfile.deptName" />
+        <wd-cell title="角色" :value="userProfile.roleNames" />
+        <wd-cell title="创建日期" :value="userProfile.createTime" />
+      </wd-cell-group>
+    </view>
+
+    <view class="profile-card">
+      <wd-cell-group border>
+        <wd-cell
+          title="账户密码"
+          label="定期修改密码有助于保护账户安全"
+          value="修改"
+          is-link
+          @click="handleOpenDialog(DialogType.PASSWORD)"
+        />
+        <wd-cell
+          title="绑定手机"
+          :value="userProfile?.mobile"
+          is-link
+          @click="handleOpenDialog(DialogType.MOBILE)"
+        />
+        <wd-cell
+          title="绑定邮箱"
+          :value="userProfile?.email ? userProfile.email : '未绑定邮箱'"
+          is-link
+          @click="handleOpenDialog(DialogType.EMAIL)"
+        />
+      </wd-cell-group>
+    </view>
+
+    <!--头像裁剪-->
+    <wd-img-cropper v-model="avatarShow" :img-src="originalSrc" @confirm="handleAvatarConfirm" />
+
+    <!--用户信息编辑弹出框-->
+    <wd-popup v-model="dialog.visible" position="bottom" custom-style="min-height: 200px;">
+      <wd-form
+        v-if="dialog.type === DialogType.ACCOUNT"
+        ref="userProfileFormRef"
+        :model="userProfileForm"
+        class="edit-form"
+      >
+        <wd-cell-group border>
+          <wd-input
+            v-model="userProfileForm.nickname"
+            label="昵称"
+            label-width="80px"
+            placeholder="请输入昵称"
+            prop="nickname"
+            :rules="rules.nickname"
+          />
+          <wd-cell title="性别" title-width="80px" center prop="gender" :rules="rules.gender">
+            <wd-radio-group v-model="userProfileForm.gender" shape="button" class="ef-radio-group">
+              <wd-radio :value="1">男</wd-radio>
+              <wd-radio :value="2">女</wd-radio>
+            </wd-radio-group>
+          </wd-cell>
+        </wd-cell-group>
+        <view class="footer">
+          <wd-button type="primary" size="large" block @click="handleSubmit">提交</wd-button>
+        </view>
+      </wd-form>
+      <wd-form
+        v-if="dialog.type === DialogType.PASSWORD"
+        ref="passwordChangeFormRef"
+        :model="passwordChangeForm"
+        class="edit-form"
+      >
+        <wd-cell-group border>
+          <wd-input
+            v-model="passwordChangeForm.oldPassword"
+            label="原密码"
+            label-width="80px"
+            show-password
+            clearable
+            placeholder="请输入原密码"
+            prop="oldPassword"
+            :rules="rules.oldPassword"
+          />
+          <wd-input
+            v-model="passwordChangeForm.newPassword"
+            label="新密码"
+            label-width="80px"
+            show-password
+            clearable
+            placeholder="请输入新密码"
+            prop="newPassword"
+            :rules="rules.newPassword"
+          />
+          <wd-input
+            v-model="passwordChangeForm.confirmPassword"
+            label="确认密码"
+            label-width="80px"
+            show-password
+            clearable
+            placeholder="请确认新密码"
+            prop="confirmPassword"
+            :rules="rules.confirmPassword"
+          />
+        </wd-cell-group>
+        <view class="footer">
+          <wd-button type="primary" size="large" block @click="handleSubmit">提交</wd-button>
+        </view>
+      </wd-form>
+      <wd-form
+        v-if="dialog.type === DialogType.MOBILE"
+        ref="mobileBindingFormRef"
+        :model="mobileBindingForm"
+        class="edit-form"
+      >
+        <wd-cell-group border>
+          <wd-input
+            v-model="mobileBindingForm.mobile"
+            label="手机号码"
+            label-width="80px"
+            clearable
+            placeholder="请输入手机号码"
+            prop="mobile"
+            :rules="rules.mobile"
+          />
+          <wd-input
+            v-model="mobileBindingForm.code"
+            label="验证码"
+            label-width="80px"
+            clearable
+            placeholder="请输入验证码"
+            prop="code"
+            :rules="rules.code"
+          >
+            <template #suffix>
+              <wd-button
+                plain
+                :disabled="mobileCountdown > 0"
+                @click="handleSendVerificationCode('MOBILE')"
+              >
+                {{ mobileCountdown > 0 ? `${mobileCountdown}s后重新发送` : "发送验证码" }}
+              </wd-button>
+            </template>
+          </wd-input>
+        </wd-cell-group>
+        <view class="footer">
+          <wd-button type="primary" size="large" block @click="handleSubmit">提交</wd-button>
+        </view>
+      </wd-form>
+      <wd-form
+        v-if="dialog.type === DialogType.EMAIL"
+        ref="emailBindingFormRef"
+        :model="emailBindingForm"
+        class="edit-form"
+      >
+        <wd-cell-group border>
+          <wd-input
+            v-model="emailBindingForm.email"
+            label="邮箱"
+            label-width="80px"
+            clearable
+            placeholder="请输入邮箱"
+            prop="email"
+            :rules="rules.email"
+          />
+          <wd-input
+            v-model="emailBindingForm.code"
+            label="验证码"
+            label-width="80px"
+            clearable
+            placeholder="请输入验证码"
+            prop="code"
+            :rules="rules.code"
+          >
+            <template #suffix>
+              <wd-button
+                plain
+                :disabled="emailCountdown > 0"
+                @click="handleSendVerificationCode('EMAIL')"
+              >
+                {{ emailCountdown > 0 ? `${emailCountdown}s后重新发送` : "发送验证码" }}
+              </wd-button>
+            </template>
+          </wd-input>
+        </wd-cell-group>
+        <view class="footer">
+          <wd-button type="primary" size="large" block @click="handleSubmit">提交</wd-button>
+        </view>
+      </wd-form>
+    </wd-popup>
   </view>
 </template>
+<script setup lang="ts">
+import UserAPI, {
+  type UserProfileVO,
+  UserProfileForm,
+  PasswordChangeForm,
+  MobileBindingForm,
+  EmailBindingForm,
+} from "@/api/system/user";
+import FileAPI, { type FileInfo } from "@/api/file";
+
+const originalSrc = ref<string>(""); //选取的原图路径
+const avatarShow = ref<boolean>(false); //显示头像裁剪
+const userProfile = ref<UserProfileVO>(); //用户信息
+
+/** 加载用户信息 */
+const loadUserProfile = async () => {
+  userProfile.value = await UserAPI.getProfile();
+};
+
+// 头像选择
+function avatarUpload() {
+  uni.chooseImage({
+    count: 1,
+    success: (res) => {
+      originalSrc.value = res.tempFilePaths[0];
+      avatarShow.value = true;
+    },
+  });
+}
+// 头像裁剪完成
+function handleAvatarConfirm(event) {
+  const { tempFilePath } = event;
+  FileAPI.upload(tempFilePath).then((fileInfo: FileInfo) => {
+    const avatarForm: UserProfileForm = {
+      avatar: fileInfo.url,
+    };
+    // 头像路径保存至后端
+    UserAPI.updateProfile(avatarForm).then(() => {
+      uni.showToast({ title: "头像上传成功", icon: "none" });
+      loadUserProfile();
+    });
+  });
+}
+
+const validatorConfirmPassword = (value) => {
+  if (!value) {
+    return Promise.reject("请确认密码");
+  } else {
+    if (value !== passwordChangeForm.newPassword) {
+      return Promise.reject("两次输入的密码不一致");
+    } else {
+      return Promise.resolve();
+    }
+  }
+};
+// 本页面中所有的校验规则
+const rules = reactive({
+  nickname: [{ required: true, message: "请填写昵称" }],
+  gender: [{ required: true, message: "请选择性别" }],
+  oldPassword: [{ required: true, message: "请填写原密码" }],
+  newPassword: [{ required: true, message: "请填写新密码" }],
+  confirmPassword: [{ required: true, message: "请确认密码", validator: validatorConfirmPassword }],
+  mobile: [{ required: true, pattern: /^1[3-9]\d{9}$/, message: "请填写正确的手机号码" }],
+  code: [{ required: true, message: "请填写验证码" }],
+  email: [
+    {
+      required: true,
+      pattern: /\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/,
+      message: "请填写正确的邮箱地址",
+    },
+  ],
+});
+
+enum DialogType {
+  ACCOUNT = "account",
+  PASSWORD = "password",
+  MOBILE = "mobile",
+  EMAIL = "email",
+}
+
+const dialog = reactive({
+  visible: false,
+  type: "" as DialogType, // 修改账号资料,修改密码、绑定手机、绑定邮箱
+});
+
+const userProfileForm = reactive<UserProfileForm>({});
+const passwordChangeForm = reactive<PasswordChangeForm>({});
+const mobileBindingForm = reactive<MobileBindingForm>({});
+const emailBindingForm = reactive<EmailBindingForm>({});
+const userProfileFormRef = ref();
+const passwordChangeFormRef = ref();
+const mobileBindingFormRef = ref();
+const emailBindingFormRef = ref();
+
+const mobileCountdown = ref(0);
+const mobileTimer = ref<NodeJS.Timeout | null>(null);
+
+const emailCountdown = ref(0);
+const emailTimer = ref<NodeJS.Timeout | null>(null);
+/**
+ * 打开弹窗
+ * @param type 弹窗类型 ACCOUNT: 账号资料 PASSWORD: 修改密码 MOBILE: 绑定手机 EMAIL: 绑定邮箱
+ */
+const handleOpenDialog = (type: DialogType) => {
+  dialog.type = type;
+  dialog.visible = true;
+  switch (type) {
+    case DialogType.ACCOUNT:
+      // 初始化表单数据
+      userProfileForm.nickname = userProfile.value?.nickname;
+      userProfileForm.gender = userProfile.value?.gender;
+      break;
+    case DialogType.PASSWORD:
+      passwordChangeForm.oldPassword = "";
+      passwordChangeForm.newPassword = "";
+      passwordChangeForm.confirmPassword = "";
+      break;
+    case DialogType.MOBILE:
+      mobileBindingForm.mobile = "";
+      mobileBindingForm.code = "";
+      break;
+    case DialogType.EMAIL:
+      emailBindingForm.email = "";
+      emailBindingForm.code = "";
+      break;
+  }
+};
+
+/**
+ *  发送验证码
+ *
+ * @param contactType 联系方式类型 MOBILE: 手机号码  EMAIL: 邮箱
+ */
+const handleSendVerificationCode = async (contactType: string) => {
+  if (contactType === "MOBILE") {
+    mobileBindingFormRef.value.validate("mobile").then(({ valid }) => {
+      if (valid) {
+        UserAPI.sendVerificationCode(mobileBindingForm.mobile, "MOBILE").then(() => {
+          uni.showToast({ title: "验证码已发送", icon: "none" });
+          mobileCountdown.value = 60;
+          mobileTimer.value = setInterval(() => {
+            if (mobileCountdown.value > 0) {
+              mobileCountdown.value -= 1;
+            } else {
+              clearInterval(mobileTimer.value!);
+            }
+          }, 1000);
+        });
+      }
+    });
+  } else if (contactType === "EMAIL") {
+    emailBindingFormRef.value.validate("email").then(({ valid }) => {
+      if (valid) {
+        UserAPI.sendVerificationCode(emailBindingForm.email, "EMAIL").then(() => {
+          uni.showToast({ title: "验证码已发送", icon: "none" });
+          emailCountdown.value = 60;
+          emailTimer.value = setInterval(() => {
+            if (emailCountdown.value > 0) {
+              emailCountdown.value -= 1;
+            } else {
+              clearInterval(emailTimer.value!);
+            }
+          }, 1000);
+        });
+      }
+    });
+  }
+};
+
+// 提交表单
+function handleSubmit() {
+  if (dialog.type === DialogType.ACCOUNT) {
+    userProfileFormRef.value.validate().then(({ valid }) => {
+      if (valid) {
+        UserAPI.updateProfile(userProfileForm).then(() => {
+          uni.showToast({ title: "账号资料修改成功", icon: "none" });
+          dialog.visible = false;
+          loadUserProfile();
+        });
+      }
+    });
+  } else if (dialog.type === DialogType.PASSWORD) {
+    passwordChangeFormRef.value.validate().then(({ valid }) => {
+      if (valid) {
+        UserAPI.changePassword(passwordChangeForm).then(() => {
+          uni.showToast({ title: "密码修改成功", icon: "none" });
+          dialog.visible = false;
+        });
+      }
+    });
+  } else if (dialog.type === DialogType.MOBILE) {
+    mobileBindingFormRef.value.validate().then(({ valid }) => {
+      if (valid) {
+        UserAPI.bindMobile(mobileBindingForm).then(() => {
+          uni.showToast({ title: "手机号绑定成功", icon: "none" });
+          dialog.visible = false;
+          loadUserProfile();
+        });
+      }
+    });
+  } else if (dialog.type === DialogType.EMAIL) {
+    emailBindingFormRef.value.validate().then(({ valid }) => {
+      if (valid) {
+        UserAPI.bindEmail(emailBindingForm).then(() => {
+          uni.showToast({ title: "邮箱绑定成功", icon: "none" });
+          dialog.visible = false;
+          loadUserProfile();
+        });
+      }
+    });
+  }
+}
+
+onMounted(() => {
+  // #ifdef H5
+  document.addEventListener("touchstart", touchstartListener, { passive: false });
+  document.addEventListener("touchmove", touchmoveListener, { passive: false });
+  // #endif
+  loadUserProfile();
+});
+
+// 页面销毁前移除事件监听
+onBeforeUnmount(() => {
+  // #ifdef H5
+  document.removeEventListener("touchstart", touchstartListener);
+  document.removeEventListener("touchmove", touchmoveListener);
+  // #endif
+});
+// 禁用浏览器双指缩放，使头像裁剪时双指缩放能够起作用
+function touchstartListener(event) {
+  if (event.touches.length > 1) {
+    event.preventDefault();
+  }
+}
+// 禁用浏览器下拉刷新，使头像裁剪时能够移动图片
+function touchmoveListener(event) {
+  event.preventDefault();
+}
+</script>
+<style lang="scss" scoped>
+.profile-card {
+  padding: 5px;
+  margin-bottom: 12px;
+  line-height: 1.1;
+  background-color: rgb(255, 255, 255);
+  border-radius: 16px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.05);
+
+  .avatar-cell {
+    :deep(.wd-cell__body) {
+      align-items: center;
+    }
+    .avatar {
+      display: flex;
+      align-items: center;
+      justify-content: right;
+      .img {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        background-color: rgba(0, 0, 0, 0.04);
+        border-radius: 50%;
+        .img-icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          font-size: 60px;
+          color: #fff;
+          -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+  }
+}
+.edit-form {
+  padding-top: 20px;
+  .ef-radio-group {
+    line-height: 1;
+    text-align: left;
+  }
+  .footer {
+    padding: 12px;
+  }
+}
+</style>
