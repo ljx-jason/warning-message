@@ -4,19 +4,16 @@
 
     <wd-card v-for="item in dataList">
       <template #title>
-        <view class="flex justify-between">
-          <view class="flex items-center">
-            <image class="w-100rpx h-100rpx rounded-full" :src="item.avatar" />
-            <view class="ml-2">
-              <view class="font-bold">
-                {{ item.nickname }}
-                <wd-icon v-if="item.gender == 1" name="gender-male" class="color-#4D80F0" />
-                <wd-icon v-else-if="item.gender == 2" name="gender-female" class="color-#fa4350" />
-              </view>
-              <view class="text-12px mt-1">{{ item.deptName }}</view>
+        <view class="flex items-center">
+          <image class="w-100rpx h-100rpx rounded-full" :src="item.avatar" />
+          <view class="ml-2">
+            <view class="font-bold">
+              {{ item.nickname }}
+              <wd-icon v-if="item.gender == 1" name="gender-male" class="color-#4D80F0" />
+              <wd-icon v-else-if="item.gender == 2" name="gender-female" class="color-#fa4350" />
             </view>
+            <view class="text-12px mt-1">{{ item.deptName }}</view>
           </view>
-          <view>{{ item.createTime }}</view>
         </view>
       </template>
 
@@ -38,19 +35,33 @@
         </view>
 
         <view>
-          {{ item.status == 1 ? "启用" : "禁用" }}
+          <wd-img
+            :width="50"
+            :height="50"
+            round
+            :src="
+              item.status == 1
+                ? '@/static/images/enabled.png'
+                : '../../../static/images/disabled.png'
+            "
+          />
         </view>
       </view>
 
       <template #footer>
-        <wd-button size="small" plain @click="handleOpenDialog(item.id)">编辑</wd-button>
-        <wd-button type="warning" size="small" plain class="ml-2">删除</wd-button>
+        <view class="flex justify-between">
+          <view>{{ item.createTime }}</view>
+          <view>
+            <wd-button size="small" plain @click="handleOpenDialog(item.id)">编辑</wd-button>
+            <wd-button type="warning" size="small" plain class="ml-2">删除</wd-button>
+          </view>
+        </view>
       </template>
     </wd-card>
 
     <wd-loadmore :state="state" @reload="loadmore" />
 
-    <wd-popup v-model="dialog.visible" position="bottom" custom-style="min-height: 200px;">
+    <wd-popup v-model="dialog.visible" position="bottom">
       <wd-form :model="formData">
         <wd-cell-group>
           <wd-cell title="昵称" title-width="200rpx">
@@ -75,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { LoadMoreState } from "wd-design-uni/components/wd-loadmore/types";
+import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
 import UserAPI, { type UserPageQuery, UserPageVO, UserForm } from "@/api/system/user";
 
 const state = ref<LoadMoreState>("loading"); // 加载状态 loading, finished:, error
@@ -125,8 +136,13 @@ function handleSort() {
 /**
  * 打开弹窗
  */
-function handleOpenDialog(id: number) {
+function handleOpenDialog(id?: number) {
   dialog.visible = true;
+  if (id) {
+    UserAPI.getFormData(id).then((data) => {
+      Object.assign(formData, { ...data });
+    });
+  }
 }
 
 function handleEdit(row: UserPageVO) {
