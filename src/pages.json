@@ -44,12 +44,6 @@
       }
     },
     {
-      "path": "pages/work/user/edit",
-      "style": {
-        "navigationBarTitleText": "编辑用户"
-      }
-    },
-    {
       "path": "pages/work/log/index",
       "style": {
         "navigationBarTitleText": "日志管理"

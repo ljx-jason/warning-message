@@ -8,7 +8,11 @@
           <view class="flex items-center">
             <image class="w-100rpx h-100rpx rounded-full" :src="item.avatar" />
             <view class="ml-2">
-              <view class="font-bold">{{ item.nickname }}</view>
+              <view class="font-bold">
+                {{ item.nickname }}
+                <wd-icon v-if="item.gender == 1" name="gender-male" class="color-#4D80F0" />
+                <wd-icon v-else-if="item.gender == 2" name="gender-female" class="color-#fa4350" />
+              </view>
               <view class="text-12px mt-1">{{ item.deptName }}</view>
             </view>
           </view>
@@ -16,34 +20,63 @@
         </view>
       </template>
 
-      <view>
-        <view class="flex items-center">
-          <wd-icon name="usergroup" size="16" class="mr-1" />
-          <view>{{ item.roleNames }}</view>
+      <view class="flex justify-between">
+        <view>
+          <view class="flex items-center">
+            <wd-icon name="usergroup" size="16" class="mr-1" />
+            <view>{{ item.roleNames }}</view>
+          </view>
+
+          <view class="flex items-center">
+            <wd-icon name="mobile" size="16" class="mr-1" />
+            <view>{{ item.mobile }}</view>
+          </view>
+          <view class="flex items-center">
+            <wd-icon name="mail" size="16" class="mr-1" />
+            <view>{{ item.email }}</view>
+          </view>
         </view>
 
-        <view class="flex items-center">
-          <wd-icon name="mobile" size="16" class="mr-1" />
-          <view>{{ item.mobile }}</view>
-        </view>
-        <view class="flex items-center">
-          <wd-icon name="mail" size="16" class="mr-1" />
-          <view>{{ item.email }}</view>
+        <view>
+          {{ item.status == 1 ? "启用" : "禁用" }}
         </view>
       </view>
 
       <template #footer>
-        <wd-button size="small" plain>编辑</wd-button>
+        <wd-button size="small" plain @click="handleOpenDialog(item.id)">编辑</wd-button>
         <wd-button type="warning" size="small" plain class="ml-2">删除</wd-button>
       </template>
     </wd-card>
 
     <wd-loadmore :state="state" @reload="loadmore" />
+
+    <wd-popup v-model="dialog.visible" position="bottom" custom-style="min-height: 200px;">
+      <wd-form :model="formData">
+        <wd-cell-group>
+          <wd-cell title="昵称" title-width="200rpx">
+            <wd-input v-model="formData.nickname" />
+          </wd-cell>
+          <wd-cell title="手机号" title-width="200rpx">
+            <wd-input v-model="formData.mobile" />
+          </wd-cell>
+          <wd-cell title="邮箱" title-width="200rpx">
+            <wd-input v-model="formData.email" />
+          </wd-cell>
+          <wd-cell title="状态" title-width="200rpx">
+            <wd-switch v-model="formData.status" />
+          </wd-cell>
+        </wd-cell-group>
+      </wd-form>
+      <view class="footer">
+        <wd-button type="primary" block @click="handleSubmit">提交</wd-button>
+      </view>
+    </wd-popup>
   </view>
 </template>
+
 <script lang="ts" setup>
-import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
-import UserAPI, { type UserPageQuery, UserPageVO } from "@/api/system/user";
+import { LoadMoreState } from "wd-design-uni/components/wd-loadmore/types";
+import UserAPI, { type UserPageQuery, UserPageVO, UserForm } from "@/api/system/user";
 
 const state = ref<LoadMoreState>("loading"); // 加载状态 loading, finished:, error
 const dataList = ref<UserPageVO[]>([]);
@@ -54,6 +87,12 @@ const queryParams: UserPageQuery = {
 };
 
 const total = ref(0); // 总数
+
+const dialog = reactive({
+  visible: false,
+});
+
+const formData = reactive<UserForm>({});
 
 onReachBottom(() => {
   if (queryParams.pageNum * queryParams.pageSize < total.value) {
@@ -83,6 +122,13 @@ function handleSort() {
   dataList.value = dataList.value?.reverse();
 }
 
+/**
+ * 打开弹窗
+ */
+function handleOpenDialog(id: number) {
+  dialog.visible = true;
+}
+
 function handleEdit(row: UserPageVO) {
   console.log("编辑", row);
   uni.navigateTo({
@@ -92,6 +138,10 @@ function handleEdit(row: UserPageVO) {
 
 function handleDelete(row: UserPageVO) {
   console.log("删除", row);
+}
+
+function handleSubmit() {
+  console.log("提交", formData);
 }
 
 onLoad(() => {
