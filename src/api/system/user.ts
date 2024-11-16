@@ -84,6 +84,18 @@ const UserAPI = {
       data: data,
     });
   },
+  /**
+   * 获取用户表单详情
+   *
+   * @param userId 用户ID
+   * @returns 用户表单详情
+   */
+  getFormData(userId: number) {
+    return request<UserForm>({
+      url: `${USER_BASE_URL}/${userId}/form`,
+      method: "GET",
+    });
+  },
 };
 export default UserAPI;
 
@@ -232,4 +244,28 @@ export interface EmailBindingForm {
   email?: string;
   /** 验证码 */
   code?: string;
+}
+
+/** 用户表单 */
+export interface UserForm {
+  /** 用户头像 */
+  avatar?: string;
+  /** 部门ID */
+  deptId?: number;
+  /** 邮箱 */
+  email?: string;
+  /** 性别 */
+  gender?: number;
+  /** 用户ID */
+  id?: number;
+  /** 手机号 */
+  mobile?: string;
+  /** 昵称 */
+  nickname?: string;
+  /** 角色ID集合 */
+  roleIds?: number[];
+  /** 用户状态(1:正常;0:禁用) */
+  status?: number;
+  /** 用户名 */
+  username?: string;
 }
