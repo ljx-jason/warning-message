@@ -54,6 +54,18 @@
       "style": {
         "navigationBarTitleText": "日志管理"
       }
+    },
+    {
+      "path": "pages/work/system/config/config",
+      "style": {
+        "navigationBarTitleText": "系统配置"
+      }
+    },
+    {
+      "path": "pages/work/system/config/item",
+      "style": {
+        "navigationBarTitleText": "配置详情"
+      }
     }
   ],
   "globalStyle": {

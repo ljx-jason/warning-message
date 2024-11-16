@@ -1,4 +1,3 @@
-// import request from "@/utils/request";
 import request from "@/utils/request";
 
 const CONFIG_BASE_URL = "/api/v1/config";
@@ -62,12 +61,8 @@ const ConfigAPI = {
 
   refreshCache() {
     return request({
-      url: `${CONFIG_BASE_URL}`,
-      method: "POST",
-      header: {
-        "Content-Type": "application/json",
-        "X-HTTP-Method-Override": "PATCH",
-      },
+      url: `${CONFIG_BASE_URL}/refresh`,
+      method: "PUT",
     });
   },
 };
