@@ -4,7 +4,7 @@
     <wd-drop-menu
       close-on-click-modal
       class="mb-20rpx"
-      style=" margin-right: 20rpx;margin-left: 20rpx"
+      style="margin-right: 20rpx; margin-left: 20rpx"
     >
       <wd-drop-menu-item
         ref="dropMenu"
@@ -37,7 +37,7 @@
         style="margin: 20rpx; border-bottom: 1px solid #ccc"
         @click="itemClicked(item)"
       >
-        <view class="card-content" style=" padding: 20rpx;margin: 20rpx">
+        <view class="card-content" style="padding: 20rpx; margin: 20rpx">
           <view class="item">
             <view class="title">配置名称：{{ item.configName }}</view>
             <view class="content">
@@ -61,6 +61,7 @@
           </view>
         </view>
       </view>
+      <wd-loadmore :state="state" @reload="handleQuery" />
     </scroll-view>
 
     <!-- 底部按钮 -->
@@ -88,10 +89,9 @@ import ConfigAPI, { ConfigPageVO, ConfigForm, ConfigPageQuery } from "@/api/syst
 import { DropMenuItemExpose } from "wot-design-uni/components/wd-drop-menu-item/types";
 import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
 
+const state = ref<LoadMoreState>("loading"); // 加载状态 loading, finished:, error
 const loading = ref(false);
-const selectIds = ref<number[]>([]);
 const total = ref(0);
-const loadMoreState = ref<LoadMoreState>("loading");
 const queryParams = reactive<ConfigPageQuery>({
   pageNum: 1,
   pageSize: 10,
@@ -132,14 +132,23 @@ function handleOpened() {
 }
 
 function handleQuery() {
-  loading.value = true;
+  state.value = "loading";
   ConfigAPI.getPage(queryParams)
     .then((data) => {
       pageData.value = data.list;
       total.value = data.total;
+      // 计算当前已加载的条数
+      const loadedCount = queryParams.pageNum * queryParams.pageSize;
+
+      // 判断是否需要加载下一页
+      if (loadedCount < total.value) {
+        queryParams.pageNum++;
+        // 调用 handleQuery 继续加载下一页
+        handleQuery();
+      }
     })
     .finally(() => {
-      loading.value = false;
+      state.value = "finished";
     });
 }
 

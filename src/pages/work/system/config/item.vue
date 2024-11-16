@@ -153,6 +153,10 @@ const item = ref<ConfigPageVO | null>(null);
 // 获取传递的参数
 onLoad((options) => {
   console.log("接收到参数:", options);
+  const title = options && options.item ? "编辑配置" : "新增配置";
+  uni.setNavigationBarTitle({
+    title: title,
+  });
   if (options && options.item) {
     try {
       item.value = JSON.parse(decodeURIComponent(options.item));
