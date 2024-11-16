@@ -131,21 +131,29 @@ function handleOpened() {
   console.log("下拉菜单已打开");
 }
 
+/**
+ * 触底事件
+ */
+onReachBottom(() => {
+  queryParams.pageNum++;
+  handleQuery();
+});
+
 function handleQuery() {
   state.value = "loading";
   ConfigAPI.getPage(queryParams)
     .then((data) => {
       pageData.value = data.list;
       total.value = data.total;
-      // 计算当前已加载的条数
-      const loadedCount = queryParams.pageNum * queryParams.pageSize;
-
-      // 判断是否需要加载下一页
-      if (loadedCount < total.value) {
-        queryParams.pageNum++;
-        // 调用 handleQuery 继续加载下一页
-        handleQuery();
-      }
+      // // 计算当前已加载的条数
+      // const loadedCount = queryParams.pageNum * queryParams.pageSize;
+      //
+      // // 判断是否需要加载下一页
+      // if (loadedCount < total.value) {
+      //   queryParams.pageNum++;
+      //   // 调用 handleQuery 继续加载下一页
+      //   handleQuery();
+      // }
     })
     .finally(() => {
       state.value = "finished";
