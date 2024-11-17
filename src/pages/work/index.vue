@@ -51,6 +51,7 @@ const gridList = reactive([
       {
         icon: "/static/icons/config.png",
         title: "系统配置",
+        url: "/pages/work/system/config/config",
       },
       {
         icon: "/static/icons/notice.png",
