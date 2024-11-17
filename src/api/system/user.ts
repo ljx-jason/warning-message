@@ -27,6 +27,45 @@ const UserAPI = {
       data: queryParams,
     });
   },
+  /**
+   * 添加用户
+   *
+   * @param data 用户表单数据
+   */
+  add(data: UserForm) {
+    return request({
+      url: `${USER_BASE_URL}`,
+      method: "POST",
+      data: data,
+    });
+  },
+
+  /**
+   * 获取用户表单详情
+   *
+   * @param userId 用户ID
+   * @returns 用户表单详情
+   */
+  getFormData(userId: number) {
+    return request<UserForm>({
+      url: `${USER_BASE_URL}/${userId}/form`,
+      method: "GET",
+    });
+  },
+
+  /**
+   * 修改用户
+   *
+   * @param id 用户ID
+   * @param data 用户表单数据
+   */
+  update(id: number, data: UserForm) {
+    return request({
+      url: `${USER_BASE_URL}/${id}`,
+      method: "PUT",
+      data: data,
+    });
+  },
 
   /** 获取个人中心用户信息 */
   getProfile() {
@@ -84,16 +123,16 @@ const UserAPI = {
       data: data,
     });
   },
+
   /**
-   * 获取用户表单详情
+   * 批量删除用户，多个以英文逗号(,)分割
    *
-   * @param userId 用户ID
-   * @returns 用户表单详情
+   * @param ids 用户ID字符串，多个以英文逗号(,)分割
    */
-  getFormData(userId: number) {
-    return request<UserForm>({
-      url: `${USER_BASE_URL}/${userId}/form`,
-      method: "GET",
+  deleteByIds(ids: string) {
+    return request({
+      url: `${USER_BASE_URL}/${ids}`,
+      method: "DELETE",
     });
   },
 };
@@ -142,7 +181,7 @@ export interface UserPageVO {
   /** 用户头像URL */
   avatar?: string;
   /** 创建时间 */
-  createTime?: Date;
+  createTime?: string;
   /** 部门名称 */
   deptName?: string;
   /** 用户邮箱 */
@@ -150,7 +189,7 @@ export interface UserPageVO {
   /** 性别 */
   gender?: number;
   /** 用户ID */
-  id?: number;
+  id: number;
   /** 手机号 */
   mobile?: string;
   /** 用户昵称 */
@@ -263,7 +302,7 @@ export interface UserForm {
   /** 昵称 */
   nickname?: string;
   /** 角色ID集合 */
-  roleIds?: number[];
+  roleIds: number[];
   /** 用户状态(1:正常;0:禁用) */
   status?: number;
   /** 用户名 */

@@ -13,7 +13,9 @@ export default {
   shortcuts: [
     {
       "flex-center": "flex justify-center items-center flex-wrap",
+      "flex-start": "flex justify-start items-center",
       "flex-col-center": "flex flex-col justify-center items-center",
+      "flex-between": "flex justify-between items-center",
     },
   ],
 
