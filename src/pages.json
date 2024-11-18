@@ -50,13 +50,13 @@
       }
     },
     {
-      "path": "pages/work/system/config/config",
+      "path": "pages/work/config/config",
       "style": {
         "navigationBarTitleText": "系统配置"
       }
     },
     {
-      "path": "pages/work/system/config/item",
+      "path": "pages/work/config/item",
       "style": {
         "navigationBarTitleText": "配置详情"
       }
