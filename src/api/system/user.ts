@@ -175,8 +175,11 @@ export interface UserPageQuery extends PageQuery {
   /** 开始时间 */
   createTime?: [string, string];
 
-  /** 排序类型(1:最近创建；2:最近更新) */
-  sortType?: number;
+  /** 排序字段 */
+  field?: string;
+
+  /** 排序方式(asc:正序,desc:倒序) */
+  direction?: string;
 }
 
 /** 用户分页对象 */

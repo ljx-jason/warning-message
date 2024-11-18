@@ -119,7 +119,6 @@ const dataList = ref<UserPageVO[]>([]);
 const queryParams: UserPageQuery = {
   pageNum: 1,
   pageSize: 10,
-  sortType: 1,
 };
 
 const daterange = ref<any[]>(["", Date.now()]);
@@ -175,9 +174,18 @@ const sortOptions = ref<Record<string, any>[]>([
 /**
  * 排序改变
  */
-const handleSortChange = (value: number) => {
+const handleSortChange = ({ value }: { value: number }) => {
   console.log("排序", value);
   queryParams.pageNum = 1;
+
+  if (value === 1) {
+    queryParams.field = "create_time";
+    queryParams.direction = "DESC";
+  } else if (value === 2) {
+    queryParams.field = "update_time";
+    queryParams.direction = "DESC";
+  }
+
   loadmore();
 };
 
