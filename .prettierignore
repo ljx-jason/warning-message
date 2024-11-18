@@ -3,3 +3,5 @@
 dist
 public
 node_modules
+
+auto-imports.d.ts
