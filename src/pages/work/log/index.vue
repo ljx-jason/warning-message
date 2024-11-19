@@ -2,13 +2,7 @@
   <view class="log">
     <!-- 筛选 -->
     <wd-drop-menu close-on-click-modal class="mb-20rpx">
-      <wd-drop-menu-item
-        ref="dropMenu"
-        title="筛选"
-        icon="filter"
-        icon-size="18px"
-        @opened="handleOpened"
-      >
+      <wd-drop-menu-item ref="dropMenu" title="筛选" icon="filter" icon-size="18px">
         <view>
           <wd-input
             v-model="queryParams.keywords"
@@ -242,13 +236,6 @@ const detailTypeArray = ref<listPageType[]>([
 function getDetail(item: LogPageVO) {
   detailShow.value = true;
   logDetail.value = item;
-}
-
-/**
- * 返回
- */
-function back() {
-  uni.navigateBack();
 }
 </script>
 

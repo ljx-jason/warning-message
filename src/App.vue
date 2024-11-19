@@ -10,4 +10,8 @@ onHide(() => {
   console.log("App Hide");
 });
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss">
+page {
+  background: #f8f8f8;
+}
+</style>
