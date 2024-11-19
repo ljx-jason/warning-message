@@ -6,6 +6,7 @@
           <wd-grid-item
             v-for="(child, index) in item.children"
             :key="index"
+            v-has-perm="child.prem"
             use-slot
             link-type="navigateTo"
             :url="child.url"
@@ -30,36 +31,34 @@ const gridList = reactive([
         icon: "/static/icons/user.png",
         title: "用户管理",
         url: "/pages/work/user/index",
+        prem: "sys:user:query",
       },
 
       {
         icon: "/static/icons/role.png",
         title: "角色管理",
-      },
-      {
-        icon: "/static/icons/menu.png",
-        title: "菜单管理",
+        prem: "sys:role:query",
       },
       {
         icon: "/static/icons/dept.png",
         title: "部门管理",
+        prem: "sys:dept:query",
       },
       {
         icon: "/static/icons/dict.png",
         title: "字典管理",
+        prem: "sys:dict:query",
       },
       {
         icon: "/static/icons/config.png",
         title: "系统配置",
-        url: "/pages/work/system/config/config",
+        url: "/pages/work/config",
+        prem: "sys:config:query",
       },
       {
         icon: "/static/icons/notice.png",
         title: "通知公告",
-      },
-      {
-        icon: "/static/icons/more.png",
-        title: "更多模块",
+        prem: "sys:notice:query",
       },
     ],
   },
@@ -74,14 +73,11 @@ const gridList = reactive([
         icon: "/static/icons/log.png",
         title: "日志管理",
         url: "/pages/work/log/index",
+        prem: "sys:log:query",
       },
       {
         icon: "/static/icons/performance.png",
         title: "性能监控",
-      },
-      {
-        icon: "/static/icons/more.png",
-        title: "更多模块",
       },
     ],
   },

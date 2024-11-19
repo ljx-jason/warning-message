@@ -4,7 +4,7 @@ import UserAPI, { type UserInfo } from "@/api/system/user";
 import { setToken, getUserInfo, setUserInfo, clearAll } from "@/utils/cache";
 
 export const useUserStore = defineStore("user", () => {
-  const userInfo = ref<UserInfo | null>(getUserInfo());
+  const userInfo = ref<UserInfo | undefined>(getUserInfo());
 
   // 登录
   const login = (data: LoginFormData) => {
@@ -45,7 +45,7 @@ export const useUserStore = defineStore("user", () => {
       console.error("登出失败", error);
     } finally {
       clearAll(); // 清除本地的 token 和用户信息缓存
-      userInfo.value = null; // 清空用户信息
+      userInfo.value = undefined; // 清空用户信息
     }
   };
 

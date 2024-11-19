@@ -153,10 +153,10 @@ export interface UserInfo {
   avatar?: string;
 
   /** 角色 */
-  roles: string[];
+  roles?: string[];
 
   /** 权限 */
-  perms: string[];
+  perms?: string[];
 }
 
 /**
