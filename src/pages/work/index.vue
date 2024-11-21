@@ -51,12 +51,13 @@ const gridList = reactive([
       {
         icon: "/static/icons/config.png",
         title: "系统配置",
-        url: "/pages/work/config",
+        url: "/pages/work/config/index",
         prem: "sys:config:query",
       },
       {
         icon: "/static/icons/notice.png",
         title: "通知公告",
+        url: "/pages/work/notice/index",
         prem: "sys:notice:query",
       },
     ],
