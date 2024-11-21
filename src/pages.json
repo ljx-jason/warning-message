@@ -50,7 +50,7 @@
       }
     },
     {
-      "path": "pages/work/config/config",
+      "path": "pages/work/config/index",
       "style": {
         "navigationBarTitleText": "系统配置"
       }
@@ -59,6 +59,18 @@
       "path": "pages/work/config/item",
       "style": {
         "navigationBarTitleText": "配置详情"
+      }
+    },
+    {
+      "path": "pages/work/notice/index",
+      "style": {
+        "navigationBarTitleText": "通知公告"
+      }
+    },
+    {
+      "path": "pages/work/notice/detail",
+      "style": {
+        "navigationBarTitleText": "通知详情"
       }
     }
   ],
