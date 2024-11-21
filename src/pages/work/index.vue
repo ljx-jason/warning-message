@@ -6,7 +6,7 @@
           <wd-grid-item
             v-for="(child, index) in item.children"
             :key="index"
-            v-has-perm="child.prem"
+            :v-has-perm="child.prem"
             use-slot
             link-type="navigateTo"
             :url="child.url"
