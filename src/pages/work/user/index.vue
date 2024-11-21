@@ -19,6 +19,7 @@
       </wd-drop-menu-item>
     </wd-drop-menu>
 
+    <!-- 用户卡片 -->
     <wd-card v-for="item in dataList" class="user-card">
       <template #title>
         <view class="flex-between">
@@ -66,6 +67,7 @@
     <wd-loadmore v-if="total > 0" :state="state" @reload="loadmore" />
     <wd-message-box />
 
+    <!-- 编辑弹窗 -->
     <wd-popup v-model="dialog.visible" position="bottom">
       <wd-form ref="userFormRef" :model="formData" :rules="rules">
         <wd-cell-group border>
@@ -100,8 +102,7 @@
 <script lang="ts" setup>
 import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
 import { FormRules } from "wot-design-uni/components/wd-form/types";
-import { useMessage } from "wot-design-uni";
-import { dayjs } from "wot-design-uni";
+import { useMessage, dayjs } from "wot-design-uni";
 
 import UserAPI, { type UserPageQuery, UserPageVO, UserForm } from "@/api/system/user";
 import RoleAPI from "@/api/system/role";
