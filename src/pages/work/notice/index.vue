@@ -2,13 +2,7 @@
   <view class="notice-container">
     <!-- 添加搜索栏 -->
     <wd-drop-menu close-on-click-modal class="mb-20rpx">
-      <wd-drop-menu-item
-        ref="dropMenu"
-        title="筛选"
-        icon="filter"
-        icon-size="18px"
-        @opened="handleSearch"
-      >
+      <wd-drop-menu-item ref="dropMenu" title="筛选" icon="filter" icon-size="18px">
         <view>
           <wd-input
             v-model="queryParams.title"
@@ -38,61 +32,69 @@
             </wd-tag>
           </view>
         </template>
-        <view class="notice-content">
-          <wd-row>
+        <wd-row class="mb-20rpx">
+          <wd-col :span="12">
             <wd-col :span="12">
-              <view class="flex">
-                <text class="label">通告目标类型：</text>
-                <text class="value">{{ item.targetType === 1 ? "指定" : "全体" }}</text>
-              </view>
+              <view>通告目标类型：</view>
             </wd-col>
             <wd-col :span="12">
-              <view class="flex">
-                <text class="label">发布时间：</text>
-                <text class="value">{{ formatDate(item.publishTime) }}</text>
-              </view>
+              <view>{{ item.targetType === 1 ? "指定" : "全体" }}</view>
             </wd-col>
-          </wd-row>
-        </view>
-        <view class="notice-content">
-          <wd-row>
-            <wd-col :span="12">
-              <view class="flex">
-                <text class="label">发布人：</text>
-                <text class="value">{{ item.publisherName || "-" }}</text>
-              </view>
+          </wd-col>
+          <wd-col v-if="item.publishStatus === 1" :span="12">
+            <wd-col :span="8">
+              <view>发布时间：</view>
             </wd-col>
-            <wd-col :span="12">
-              <view class="flex">
-                <text class="label">发布时间：</text>
-                <text class="value">{{ formatDate(item.publishTime) }}</text>
-              </view>
+            <wd-col :span="16">
+              <view>{{ formatDate(item.publishTime) }}</view>
             </wd-col>
-          </wd-row>
-        </view>
+          </wd-col>
+          <wd-col v-else :span="12">
+            <wd-col :span="8">
+              <view>撤回时间：</view>
+            </wd-col>
+            <wd-col :span="16">
+              <view>{{ formatDate(item.revokeTime) }}</view>
+            </wd-col>
+          </wd-col>
+        </wd-row>
+        <wd-row class="mb-20rpx">
+          <wd-col :span="12">
+            <wd-col :span="8">
+              <view>发布人：</view>
+            </wd-col>
+            <wd-col :span="16">
+              <view>{{ item.publisherName || "-" }}</view>
+            </wd-col>
+          </wd-col>
+          <wd-col :span="12">
+            <wd-col :span="8">
+              <view>紧急程度：</view>
+            </wd-col>
+            <wd-col :span="16">
+              <view>{{ getLevelType(item.level) || "-" }}</view>
+            </wd-col>
+          </wd-col>
+        </wd-row>
+
         <template #footer>
           <view class="flex justify-end gap-20rpx">
             <wd-button size="small" plain @click="handleView(item)">查看详情</wd-button>
-            <wd-button
-              v-if="item.publishStatus === 0"
-              size="small"
-              type="primary"
-              @click="handleAction(item)"
-            >
-              更多操作
-            </wd-button>
+            <wd-button size="small" type="primary" @click="handleAction(item)">更多操作</wd-button>
           </view>
         </template>
       </wd-card>
-
-      <wd-loadmore :state="loadState" @reload="loadMore" />
     </view>
+
+    <!-- 加载更多 -->
+    <wd-loadmore custom-class="loadmore" :state="loadState" />
   </view>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
+import { DropMenuItemExpose } from "wot-design-uni/components/wd-drop-menu-item/types";
 import NoticeAPI, { NoticePageQuery, NoticePageVO } from "@/api/system/notice";
 const loadState = ref<LoadMoreState>("finished");
 const dataList = ref<NoticePageVO[]>([]);
@@ -114,38 +116,36 @@ const queryParams = ref<NoticePageQuery>({
 });
 
 // 添加搜索处理函数
+const dropMenu = ref<DropMenuItemExpose>();
 const handleSearch = () => {
   queryParams.value.pageNum = 1;
   loadMore();
+  dropMenu.value?.close();
 };
 
 // 重置
 const reset = () => {
-  queryParams.value = { ...queryParams.value, pageNum: 1 };
+  queryParams.value = { pageNum: 1, pageSize: 10 };
+  dropMenu.value?.close();
   loadMore();
 };
 
-// 监听筛选变化
-watch(
-  () => [queryParams.value.publishStatus],
-  () => {
-    queryParams.value.pageNum = 1;
-    loadMore();
-  }
-);
-
 // 获取状态样式
-const getStatusType = (status: number): string => {
-  const statusMap: Record<number, string> = {
+const getStatusType = (
+  status: number | undefined
+): "default" | "primary" | "danger" | "warning" | "success" => {
+  if (!status) return "default";
+  const statusMap: Record<number, "default" | "primary" | "danger" | "warning" | "success"> = {
     0: "primary",
-    1: "danger",
+    1: "success",
     [-1]: "warning",
   };
   return statusMap[status] || "default";
 };
 
 // 获取状态文本
-const getStatusText = (status: number): string => {
+const getStatusText = (status: number | undefined): string => {
+  if (status !== 0 && !status) return "-";
   const statusMap: Record<number, string> = {
     0: "未发布",
     1: "已发布",
@@ -155,8 +155,18 @@ const getStatusText = (status: number): string => {
 };
 
 // 格式化日期
-const formatDate = (date: string): string => {
-  return date ? date.split(" ")[0] : "-";
+const formatDate = (date: Date | undefined): string => {
+  return date ? date.toString() : "-";
+};
+
+const getLevelType = (level: string | number | undefined): string => {
+  if (!level) return "-";
+  const levelMap: Record<string, string> = {
+    L: "低",
+    M: "中",
+    H: "高",
+  };
+  return levelMap[level] || "未知";
 };
 
 // 加载更多
@@ -192,7 +202,7 @@ const handleView = (notice: NoticePageVO) => {
 
 // 操作按钮
 const handleAction = (notice: NoticePageVO) => {
-  const actions = notice.publishStatus === 0 ? ["编辑", "删除", "发布"] : ["撤回"];
+  const actions = notice.publishStatus !== 1 ? ["删除", "发布"] : ["撤回"];
   uni.showActionSheet({
     itemList: actions,
     success: ({ tapIndex }) => {
@@ -204,7 +214,7 @@ const handleAction = (notice: NoticePageVO) => {
           handleDelete(notice);
           break;
         case "发布":
-          // 处理发布逻辑
+          handlePublish(notice);
           break;
         case "撤回":
           uni.showModal({
@@ -251,7 +261,7 @@ const handleDelete = (notice: NoticePageVO) => {
     success: async (res) => {
       if (res.confirm) {
         try {
-          // await NoticeAPI.delete(notice.id)
+          await NoticeAPI.deleteByIds(notice.id);
           uni.showToast({ title: "删除成功", icon: "success" });
           // 重新加载第一页
           queryParams.value.pageNum = 1;
@@ -263,10 +273,26 @@ const handleDelete = (notice: NoticePageVO) => {
     },
   });
 };
-// 在 script setup 中添加
-const truncateText = (text: string, limit: number = 100): string => {
-  if (text.length <= limit) return text;
-  return text.slice(0, limit) + "...";
+
+// 发布
+const handlePublish = (notice: NoticePageVO) => {
+  uni.showModal({
+    title: "提示",
+    content: "确定要发布该通知吗？",
+    success: async (res) => {
+      if (res.confirm) {
+        try {
+          await NoticeAPI.publish(Number(notice.id));
+          uni.showToast({ title: "发布成功", icon: "success" });
+          // 重新加载第一页
+          queryParams.value.pageNum = 1;
+          loadMore();
+        } catch (error) {
+          uni.showToast({ title: "发布失败", icon: "none" });
+        }
+      }
+    },
+  });
 };
 
 onReachBottom(() => {
@@ -278,37 +304,3 @@ onLoad(() => {
   loadMore();
 });
 </script>
-
-<style lang="scss" scoped>
-.notice-content {
-  .label {
-    min-width: 160rpx;
-    font-size: 24rpx;
-    color: var(--wd-text-color-secondary, #999);
-  }
-  .value {
-    flex: 1;
-    font-size: 24rpx;
-    color: var(--wd-text-color, #333);
-  }
-  .content-preview {
-    margin-top: 16rpx;
-    font-size: 24rpx;
-    line-height: 1.6;
-    color: var(--wd-text-color-secondary, #999);
-  }
-}
-
-.text-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-// 卡片标题样式
-:deep(.wd-card__title) {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: var(--wd-text-color, #333);
-}
-</style>
