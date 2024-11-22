@@ -1,7 +1,7 @@
 <template>
-  <view class="notice-container">
+  <view>
     <!-- 添加搜索栏 -->
-    <wd-drop-menu close-on-click-modal class="mb-20rpx">
+    <wd-drop-menu close-on-click-modal class="mb-20rpx mr-20rpx ml-20rpx">
       <wd-drop-menu-item ref="dropMenu" title="筛选" icon="filter" icon-size="18px">
         <view>
           <wd-input
@@ -22,7 +22,7 @@
     </wd-drop-menu>
 
     <!-- 列表内容 -->
-    <view v-for="(item, index) in dataList" :key="index" class="mb-20rpx">
+    <view v-for="(item, index) in dataList" :key="index" class="mt-20rpx">
       <wd-card>
         <template #title>
           <view class="flex items-center justify-between">
@@ -112,7 +112,6 @@ const queryParams = ref<NoticePageQuery>({
   pageNum: 1,
   pageSize: 10,
   title: "",
-  publishStatus: undefined,
 });
 
 // 添加搜索处理函数
