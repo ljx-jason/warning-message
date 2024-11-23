@@ -1,4 +1,9 @@
 <template>
+  <wd-navbar title="用户管理" left-arrow>
+    <template #right>
+      <wd-icon name="add-circle" size="18" @click="handleOpenDialog()" />
+    </template>
+  </wd-navbar>
   <view class="user">
     <!-- 排序筛选 -->
     <view class="mb-24rpx">
@@ -51,18 +56,23 @@
       </wd-cell-group>
 
       <template #footer>
-        <view class="flex-between">
-          <view>
-            <wd-text text="创建时间：" size="12px" />
-            <wd-text :text="item.createTime" size="12px" />
+        <wd-swipe-action>
+          <view class="flex-between">
+            <view>
+              <wd-text text="创建时间：" size="12px" />
+              <wd-text :text="item.createTime" size="12px" />
+            </view>
+            <view>
+              <wd-button size="small" plain @click="handleOpenDialog(item.id)">编辑</wd-button>
+            </view>
           </view>
-          <view>
-            <wd-button size="small" plain @click="handleOpenDialog(item.id)">编辑</wd-button>
-            <wd-button type="error" plain size="small" class="ml-2" @click="handleDelete(item.id)">
+
+          <template #right>
+            <wd-button type="error" plain size="small" @click="handleDelete(item.id)">
               删除
             </wd-button>
-          </view>
-        </view>
+          </template>
+        </wd-swipe-action>
       </template>
     </wd-card>
 
@@ -70,7 +80,7 @@
     <wd-message-box />
 
     <!-- 编辑弹窗 -->
-    <wd-popup v-model="dialog.visible" position="bottom">
+    <wd-popup v-model="dialog.visible" position="bottom" @close="hancleCloseDialog">
       <wd-form ref="userFormRef" :model="formData" :rules="rules">
         <wd-cell-group border>
           <wd-input v-model="formData.username" label="用户名" :readonly="!formData.id" required />
@@ -98,6 +108,9 @@
         <wd-button type="primary" block @click="handleSubmit">提交</wd-button>
       </view>
     </wd-popup>
+
+    <wd-loading v-show="loading" />
+    <!-- <wd-fab position="left-bottom" :expandable="false" @click="handleOpenDialog" /> -->
   </view>
 </template>
 
@@ -113,6 +126,8 @@ import DeptAPI from "@/api/system/dept";
 import VutPicker from "@/components/VutPicker.vue";
 
 const message = useMessage();
+
+const loading = ref(false);
 const state = ref<LoadMoreState>("loading");
 const dataList = ref<UserPageVO[]>([]);
 
@@ -135,9 +150,19 @@ const total = ref(0);
 const dialog = reactive({
   visible: false,
 });
-const formData = reactive<UserForm>({
+
+const initialFormData: UserForm = {
+  id: undefined,
   roleIds: [],
-});
+  username: undefined,
+  nickname: undefined,
+  deptId: undefined,
+  mobile: undefined,
+  email: undefined,
+  status: 1,
+};
+
+const formData = reactive<UserForm>({ ...initialFormData });
 
 const userFormRef = ref();
 const roleOptions = ref<Record<string, any>[]>([]);
@@ -252,13 +277,20 @@ function loadmore() {
  * 打开弹窗
  */
 async function handleOpenDialog(id?: number) {
+  loading.value = true;
   dialog.visible = true;
   roleOptions.value = await RoleAPI.getOptions();
   deptOptions.value = await DeptAPI.getOptions();
   if (id) {
-    UserAPI.getFormData(id).then((data) => {
-      Object.assign(formData, { ...data });
-    });
+    UserAPI.getFormData(id)
+      .then((data) => {
+        Object.assign(formData, { ...data });
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  } else {
+    loading.value = false;
   }
 }
 
@@ -266,24 +298,37 @@ async function handleOpenDialog(id?: number) {
  * 提交保存
  */
 function handleSubmit() {
+  hancleCloseDialog();
   userFormRef.value.validate().then(({ valid }: { valid: boolean }) => {
     if (valid) {
       const userId = formData.id;
       if (userId) {
         UserAPI.update(userId, formData).then(() => {
           message.show("修改成功");
-          dialog.visible = false;
+          hancleCloseDialog();
           handleQuery();
         });
       } else {
         UserAPI.add(formData).then(() => {
           message.show("添加成功");
-          dialog.visible = false;
+          hancleCloseDialog();
           handleQuery();
         });
       }
     }
   });
+}
+
+// 重置表单
+function resetForm() {
+  userFormRef.value.reset();
+  Object.assign(formData, initialFormData);
+}
+
+// 关闭弹窗
+function hancleCloseDialog() {
+  dialog.visible = false;
+  resetForm();
 }
 
 /**
@@ -305,7 +350,7 @@ function handleDelete(id: number) {
     });
 }
 
-// 监听下拉菜单打开事件
+// 触底事件
 onReachBottom(() => {
   if (queryParams.pageNum * queryParams.pageSize < total.value) {
     loadmore();
@@ -314,7 +359,6 @@ onReachBottom(() => {
   }
 });
 
-// 页面加载时执行查询
 onLoad(() => {
   handleQuery();
 });

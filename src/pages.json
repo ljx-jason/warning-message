@@ -40,7 +40,7 @@
     {
       "path": "pages/work/user/index",
       "style": {
-        "navigationBarTitleText": "用户管理"
+        "navigationStyle": "custom"
       }
     },
     {
