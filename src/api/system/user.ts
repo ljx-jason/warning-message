@@ -173,7 +173,7 @@ export interface UserPageQuery extends PageQuery {
   deptId?: number;
 
   /** 开始时间 */
-  createTime?: [string, string];
+  createTime?: [string, string] | string | undefined;
 
   /** 排序字段 */
   field?: string;

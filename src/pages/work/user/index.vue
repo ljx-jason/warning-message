@@ -1,26 +1,28 @@
 <template>
   <view class="user">
     <!-- 排序筛选 -->
-    <wd-drop-menu>
-      <wd-drop-menu-item v-model="sortValue" :options="sortOptions" @change="handleSortChange" />
-      <wd-drop-menu-item ref="dropMenuRef" title="筛选">
-        <view>
-          <wd-input
-            v-model="queryParams.keywords"
-            label="关键字"
-            placeholder="用户名/昵称/手机号"
-          />
-          <wd-datetime-picker v-model="createTimeRange" type="date" label="创建时间" />
-          <view class="flex-between py-2">
-            <wd-button class="w-20%" type="info" @click="hendleResetQuery">重置</wd-button>
-            <wd-button class="w-70%" @click="handleQuery">确定</wd-button>
+    <view class="mb-24rpx">
+      <wd-drop-menu>
+        <wd-drop-menu-item v-model="sortValue" :options="sortOptions" @change="handleSortChange" />
+        <wd-drop-menu-item ref="dropMenuRef" title="筛选">
+          <view>
+            <wd-input
+              v-model="queryParams.keywords"
+              label="关键字"
+              placeholder="用户名/昵称/手机号"
+            />
+            <wd-datetime-picker v-model="createTimeRange" type="date" label="创建时间" />
+            <view class="flex-between py-2">
+              <wd-button class="w-20%" type="info" @click="hendleResetQuery">重置</wd-button>
+              <wd-button class="w-70%" @click="handleQuery">确定</wd-button>
+            </view>
           </view>
-        </view>
-      </wd-drop-menu-item>
-    </wd-drop-menu>
+        </wd-drop-menu-item>
+      </wd-drop-menu>
+    </view>
 
     <!-- 用户卡片 -->
-    <wd-card v-for="item in dataList" class="user-card">
+    <wd-card v-for="item in dataList">
       <template #title>
         <view class="flex-between">
           <view class="flex-center">
@@ -111,7 +113,6 @@ import DeptAPI from "@/api/system/dept";
 import VutPicker from "@/components/VutPicker.vue";
 
 const message = useMessage();
-// 加载状态 loading, finished:, error
 const state = ref<LoadMoreState>("loading");
 const dataList = ref<UserPageVO[]>([]);
 
@@ -126,7 +127,7 @@ const queryParams: UserPageQuery = {
   pageSize: 10,
 };
 
-const createTimeRange = ref<any[]>([, Date.now()]);
+const createTimeRange = ref<any[]>([null, null]);
 
 const dropMenuRef = ref();
 
@@ -203,11 +204,20 @@ const handleQuery = () => {
   dropMenuRef.value?.close();
   queryParams.pageNum = 1;
 
-  queryParams.createTime = [
-    createTimeRange.value[0] ? dayjs(createTimeRange.value[0]).format("YYYY-MM-DD") : "",
-    createTimeRange.value[1] ? dayjs(createTimeRange.value[1]).format("YYYY-MM-DD") : "",
-  ];
-  console.log(queryParams.createTime);
+  // 格式化时间范围
+  const startDate = createTimeRange.value[0]
+    ? dayjs(createTimeRange.value[0]).format("YYYY-MM-DD")
+    : "";
+  const endDate = createTimeRange.value[1]
+    ? dayjs(createTimeRange.value[1]).format("YYYY-MM-DD")
+    : "";
+
+  queryParams.createTime = [startDate, endDate];
+
+  // #ifdef MP-WEIXIN
+  queryParams.createTime = `${startDate},${endDate}`;
+  // #endif
+
   loadmore();
 };
 
@@ -218,7 +228,7 @@ const hendleResetQuery = () => {
   dropMenuRef.value?.close();
   queryParams.pageNum = 1;
   queryParams.keywords = "";
-  createTimeRange.value = ["", Date.now()];
+  createTimeRange.value = ["", ""];
   loadmore();
 };
 
@@ -311,12 +321,10 @@ onLoad(() => {
 </script>
 
 <style lang="scss" scoped>
-.user-card {
-  margin-top: 20rpx;
+.user {
   :deep(.wd-cell__wrapper) {
     padding: 4rpx 0;
   }
-
   :deep(.wd-cell) {
     padding-right: 10rpx;
     background: #f8f8f8;
