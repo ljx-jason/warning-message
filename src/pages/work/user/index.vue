@@ -1,7 +1,10 @@
 <template>
-  <wd-navbar title="用户管理" left-arrow>
+  <wd-navbar title="用户管理">
+    <template #left>
+      <wd-icon name="thin-arrow-left" @click="handleNavigateback()" />
+    </template>
     <template #right>
-      <wd-icon name="add-circle" size="18" @click="handleOpenDialog()" />
+      <wd-icon name="add-circle" @click="handleOpenDialog()" />
     </template>
   </wd-navbar>
   <view class="user">
@@ -348,6 +351,13 @@ function handleDelete(id: number) {
         handleQuery();
       });
     });
+}
+
+/**
+ * 返回
+ */
+function handleNavigateback() {
+  uni.navigateBack();
 }
 
 // 触底事件
