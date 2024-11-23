@@ -9,8 +9,14 @@
     />
 
     <!-- 快捷导航 -->
-    <wd-grid :column="4" class="mt-2">
-      <wd-grid-item v-for="(item, index) in gridList" :key="index" use-slot>
+    <wd-grid clickable :column="4" class="mt-2">
+      <wd-grid-item
+        v-for="(item, index) in navList"
+        :key="index"
+        use-slot
+        link-type="navigateTo"
+        :url="item.url"
+      >
         <view class="p-2">
           <image class="w-80rpx h-80rpx rounded-8rpx" :src="item.icon" />
         </view>
@@ -29,8 +35,20 @@
 
     <!-- 数据统计 -->
     <wd-grid :column="2" class="mt-2" :gutter="2">
+      <wd-grid-item use-slot custom-class="custom-item">
+        <view class="flex justify-start pl-5">
+          <view class="flex-center">
+            <image class="w-80rpx h-80rpx rounded-8rpx" src="/static/icons/online.png" />
+            <view class="ml-5 text-left">
+              <view class="font-bold">在线用户</view>
+              <view class="mt-1">1</view>
+            </view>
+          </view>
+        </view>
+      </wd-grid-item>
+
       <wd-grid-item
-        v-for="(item, index) in gridList"
+        v-for="(item, index) in visitStatsData"
         :key="index"
         use-slot
         custom-class="custom-item"
@@ -40,7 +58,7 @@
             <image class="w-80rpx h-80rpx rounded-8rpx" :src="item.icon" />
             <view class="ml-5 text-left">
               <view class="font-bold">{{ item.title }}</view>
-              <view class="mt-1">{{ item.count }}</view>
+              <view class="mt-1">{{ item.todayCount }}</view>
             </view>
           </view>
         </view>
@@ -53,13 +71,13 @@
           <view>访问趋势</view>
           <view>
             <wd-radio-group
-              v-model="dataRange"
+              v-model="recentDaysRange"
               shape="button"
               inline
               @change="handleDataRangeChange"
             >
-              <wd-radio :value="1">近7天</wd-radio>
-              <wd-radio :value="2">近30天</wd-radio>
+              <wd-radio :value="7">近7天</wd-radio>
+              <wd-radio :value="15">近15天</wd-radio>
             </wd-radio-group>
           </view>
         </view>
@@ -73,11 +91,27 @@
 </template>
 
 <script setup lang="ts">
-import LogAPI, { VisitTrendVO, VisitTrendQuery } from "@/api/system/log";
+import { dayjs } from "wot-design-uni";
+
+import LogAPI, { VisitTrendVO, VisitTrendQuery, VisitStatsVO } from "@/api/system/log";
+
+interface VisitStats {
+  title: string;
+  icon: string;
+  growthRate: number;
+  granularity: string;
+  todayCount: number;
+}
 
 const current = ref<number>(0);
 
-const dataRange = ref<number>(1);
+const visitStatsData = ref<VisitStats[] | null>(Array(3).fill({}));
+
+// 图表数据
+const chartData = ref({});
+
+// 日期范围
+const recentDaysRange = ref(7);
 
 const swiperList = ref([
   "https://registry.npmmirror.com/wot-design-uni-assets/1.0.4/files/redpanda.jpg",
@@ -87,42 +121,75 @@ const swiperList = ref([
   "https://registry.npmmirror.com/wot-design-uni-assets/1.0.4/files/meng.jpg",
 ]);
 
-const gridList = reactive([
+// 快捷导航列表
+const navList = reactive([
   {
     icon: "/static/icons/user.png",
-    title: "在线用户",
-    count: 10,
+    title: "用户管理",
+    url: "/pages/work/user/index",
+    prem: "sys:user:query",
   },
   {
-    icon: "/static/icons/role.png",
-    title: "浏览量",
-    count: 200,
+    icon: "/static/icons/config.png",
+    title: "系统配置",
+    url: "/pages/work/config/index",
+    prem: "sys:config:query",
   },
   {
-    icon: "/static/icons/dept.png",
-    title: "访客数",
-    count: 300,
+    icon: "/static/icons/notice.png",
+    title: "通知公告",
+    url: "/pages/work/notice/index",
+    prem: "sys:notice:query",
   },
   {
-    icon: "/static/icons/dict.png",
-    title: "IP数",
-    count: 400,
+    icon: "/static/icons/log.png",
+    title: "操作日志",
+    url: "/pages/work/log/index",
+    prem: "sys:log:query",
   },
 ]);
 
-function handleClick(e) {
+function handleClick(e: any) {
   console.log(e);
 }
-function onChange(e) {
+function onChange(e: any) {
   console.log(e);
 }
 
-// 图表数据
-const chartData = ref({});
-const getServerData = () => {
-  const { startDate, endDate } = calculateDateRange();
+// 加载访问统计数据
+const loadVisitStatsData = async () => {
+  const list: VisitStatsVO[] = await LogAPI.getVisitStats();
+  if (list) {
+    const iconList = [
+      "/static/icons/pv.png",
+      "/static/icons/visit.png",
+      "/static/icons/client.png",
+    ];
 
-  LogAPI.getVisitTrend({ startDate, endDate }).then((data) => {
+    const transformedList: VisitStats[] = list.map((item, index) => ({
+      title: item.title,
+      icon: iconList[index],
+      growthRate: item.growthRate,
+      granularity: "日",
+      todayCount: item.todayCount,
+      totalCount: item.totalCount,
+    }));
+    visitStatsData.value = transformedList;
+  }
+};
+
+// 加载访问趋势数据
+const loadVisitTrendData = () => {
+  const endDate = new Date();
+  const startDate = new Date(endDate);
+  startDate.setDate(endDate.getDate() - recentDaysRange.value);
+
+  const visitTrendQuery = {
+    startDate: dayjs(startDate).format("YYYY-MM-DD"),
+    endDate: dayjs(endDate).format("YYYY-MM-DD"),
+  };
+
+  LogAPI.getVisitTrend(visitTrendQuery).then((data) => {
     const res = {
       categories: data.dates,
       series: [
@@ -140,37 +207,16 @@ const getServerData = () => {
   });
 };
 
+//  数据范围变化
 const handleDataRangeChange = ({ value }: { value: number }) => {
   console.log("handleDataRangeChange", value);
-  dataRange.value = value;
-  getServerData();
-};
-
-const calculateDateRange = () => {
-  const now = new Date();
-
-  const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-  const days = dataRange.value === 1 ? 7 : 30;
-  const startDate = new Date(endDate);
-  startDate.setDate(startDate.getDate() - days);
-
-  // 手动调整日期为当地时间的 23:59:59
-  const adjustDateToLocal = (date: Date) => {
-    date.setHours(23, 59, 59, 999);
-    return date;
-  };
-
-  const adjustedEndDate = adjustDateToLocal(new Date(endDate));
-  const adjustedStartDate = adjustDateToLocal(new Date(startDate));
-  const formattedStartDate = adjustedStartDate.toISOString().split("T")[0];
-  const formattedEndDate = adjustedEndDate.toISOString().split("T")[0];
-
-  return { startDate: formattedStartDate, endDate: formattedEndDate };
+  recentDaysRange.value = value;
+  loadVisitTrendData();
 };
 
 onReady(() => {
-  getServerData();
+  loadVisitStatsData();
+  loadVisitTrendData();
 });
 </script>
 
