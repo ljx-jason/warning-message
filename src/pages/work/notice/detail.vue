@@ -29,23 +29,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { ref } from "vue";
 import type { NoticeDetailVO } from "@/api/system/notice";
 import NoticeAPI from "@/api/system/notice";
 import { TagType } from "wot-design-uni/components/wd-tag/types";
 
-const route = useRoute();
 const noticeDetail = ref<NoticeDetailVO>({});
-
-const getLevelColor = (level?: string) => {
-  const colorMap: Record<string, string> = {
-    L: "blue",
-    M: "orange",
-    H: "red",
-  };
-  return colorMap[level || "L"];
-};
 
 const getLevelText = (level?: string) => {
   const textMap: Record<string, string> = {
@@ -64,9 +53,13 @@ const getLevelType = (level?: string) => {
   return typeMap[level || "L"];
 };
 
-const getNoticeDetail = async () => {
+/**
+ * 获取通知详情
+ * @param id 通知ID
+ */
+const getNoticeDetail = async (id: string) => {
   try {
-    const res = await NoticeAPI.getDetail(route.query.id as string);
+    const res = await NoticeAPI.getDetail(id);
     console.log(res);
     noticeDetail.value = res;
   } catch (error) {
@@ -74,12 +67,24 @@ const getNoticeDetail = async () => {
   }
 };
 
+/**
+ * 格式化日期
+ * @param date 日期
+ * @returns 格式化后的日期
+ */
 const formatDate = (date: string | Date): string => {
   return date ? date.toString().split(" ")[0] : "-";
 };
 
-onMounted(() => {
-  getNoticeDetail();
+onLoad((options: any) => {
+  if (options && options.id) {
+    getNoticeDetail(options.id as string);
+  } else {
+    uni.showToast({
+      title: "通知不存在",
+      icon: "none",
+    });
+  }
 });
 </script>
 

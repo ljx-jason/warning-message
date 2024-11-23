@@ -1,23 +1,14 @@
 <template>
   <view class="work">
     <!-- 筛选 -->
-    <wd-drop-menu
-      close-on-click-modal
-      class="mb-20rpx"
-      style="margin-right: 20rpx; margin-left: 20rpx"
-    >
-      <wd-drop-menu-item
-        ref="dropMenu"
-        title="筛选"
-        icon="filter"
-        icon-size="18px"
-        @opened="handleOpened"
-      >
+    <wd-drop-menu close-on-click-modal class="mb-20rpx mr-20rpx ml-20rpx">
+      <wd-drop-menu-item ref="dropMenu" title="筛选" icon="filter" icon-size="18px">
         <view>
           <wd-input
             v-model="queryParams.keywords"
             label="关键字"
             type="text"
+            clearable
             placeholder="请输入关键字"
           />
           <view class="flex flex-row items-center mb-20rpx">
@@ -28,56 +19,57 @@
       </wd-drop-menu-item>
     </wd-drop-menu>
 
-    <!-- 列表 -->
-    <scroll-view scroll-y class="list-container">
-      <view
-        v-for="(item, index) in pageData"
-        :key="index"
-        class="card"
-        style="margin: 20rpx; border-bottom: 1px solid #ccc"
-        @click="itemClicked(item)"
-      >
-        <view class="card-content" style="padding: 20rpx; margin: 20rpx">
-          <view class="item">
-            <view class="title">配置名称：{{ item.configName }}</view>
-            <view class="content">
-              <!--              <view class="row">-->
-              <!--                <view class="label">配置名称：</view>-->
-              <!--                <view class="value">{{ item.configName }}</view>-->
-              <!--              </view>-->
-              <view class="row">
-                <view class="label">配置键：</view>
-                <view class="value">{{ item.configKey }}</view>
-              </view>
-              <view class="row">
-                <view class="label">配置值：</view>
-                <view class="value">{{ item.configValue }}</view>
-              </view>
-              <view class="row">
-                <view class="label">备注：</view>
-                <view class="value">{{ item.remark }}</view>
-              </view>
+    <view class="mt-20rpx">
+      <!-- 列表内容 -->
+      <view v-for="(item, index) in pageData" :key="index" class="mb-20rpx">
+        <wd-card>
+          <template #title>
+            <view class="flex items-center justify-between">
+              <view class="flex-1 text-truncate">{{ item.configName }}</view>
             </view>
-          </view>
-        </view>
+          </template>
+
+          <wd-row class="mb-20rpx">
+            <wd-col :span="24">
+              <wd-col :span="5">
+                <view>配置键：</view>
+              </wd-col>
+              <wd-col :span="19">
+                <view>{{ item.configKey || "-" }}</view>
+              </wd-col>
+            </wd-col>
+            <wd-col :span="24">
+              <wd-col :span="5">
+                <view>配置值：</view>
+              </wd-col>
+              <wd-col :span="19">
+                <view>{{ item.configValue || "-" }}</view>
+              </wd-col>
+            </wd-col>
+            <wd-col :span="24">
+              <wd-col :span="5">
+                <view>备注：</view>
+              </wd-col>
+              <wd-col :span="19">
+                <view>{{ item.remark || "-" }}</view>
+              </wd-col>
+            </wd-col>
+          </wd-row>
+
+          <template #footer>
+            <view class="flex justify-end pr-20rpx">
+              <wd-button size="small" type="primary" @click="handleAction(item)">操作</wd-button>
+            </view>
+          </template>
+        </wd-card>
       </view>
-      <wd-loadmore :state="state" @reload="handleQuery" />
-    </scroll-view>
+    </view>
+
+    <!-- 加载更多 -->
+    <wd-loadmore :state="state" @reload="handleQuery" />
 
     <!-- 底部按钮 -->
-    <view
-      class="footer-buttons"
-      style="
-        position: fixed;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        display: flex;
-        justify-content: space-around;
-        padding: 20rpx;
-        background-color: #fff;
-      "
-    >
+    <view class="fixed bottom-0 left-0 right-0 flex justify-around p-20rpx bg-#fff">
       <wd-button size="medium" type="primary" @click="add">添加</wd-button>
       <wd-button size="medium" type="success" @click="refreshCache">刷新缓存</wd-button>
     </view>
@@ -88,9 +80,8 @@
 import ConfigAPI, { ConfigPageVO, ConfigForm, ConfigPageQuery } from "@/api/system/config";
 import { DropMenuItemExpose } from "wot-design-uni/components/wd-drop-menu-item/types";
 import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
-
+import { debounce } from "@/utils/commonUtil";
 const state = ref<LoadMoreState>("loading"); // 加载状态 loading, finished:, error
-const loading = ref(false);
 const total = ref(0);
 const queryParams = reactive<ConfigPageQuery>({
   pageNum: 1,
@@ -104,9 +95,13 @@ const pageData = ref<ConfigPageVO[]>([]);
  */
 const dropMenu = ref<DropMenuItemExpose>();
 
+/**
+ * 搜索
+ */
 function search() {
   pageData.value = [];
   dropMenu.value?.close();
+  queryParams.pageNum = 1;
   handleQuery();
 }
 
@@ -116,19 +111,9 @@ function search() {
 function reset() {
   queryParams.pageNum = 1;
   queryParams.keywords = "";
-  // queryParams.createTime = ["", ""];
-  // timeStampArray.value = [];
   pageData.value = [];
   dropMenu.value?.close();
   handleQuery();
-}
-
-/**
- * 处理下拉菜单打开事件
- */
-function handleOpened() {
-  // 在这里可以添加处理下拉菜单打开时的逻辑
-  console.log("下拉菜单已打开");
 }
 
 /**
@@ -139,35 +124,38 @@ onReachBottom(() => {
   handleQuery();
 });
 
+/**
+ * 查询
+ */
 function handleQuery() {
   state.value = "loading";
   ConfigAPI.getPage(queryParams)
     .then((data) => {
-      pageData.value = data.list;
+      if (queryParams.pageNum === 1) {
+        pageData.value = data.list;
+      } else {
+        pageData.value.push(...data.list);
+      }
       total.value = data.total;
-      // // 计算当前已加载的条数
-      // const loadedCount = queryParams.pageNum * queryParams.pageSize;
-      //
-      // // 判断是否需要加载下一页
-      // if (loadedCount < total.value) {
-      //   queryParams.pageNum++;
-      //   // 调用 handleQuery 继续加载下一页
-      //   handleQuery();
-      // }
     })
     .finally(() => {
       state.value = "finished";
     });
 }
 
+/**
+ * 添加
+ */
 function add() {
-  // 跳转到指定页面
   uni.navigateTo({
-    url: "/pages/work/config/item",
+    url: "/pages/work/config/edit",
   });
 }
 
-function refreshCache() {
+/**
+ * 刷新缓存
+ */
+const refreshCache = debounce(() => {
   ConfigAPI.refreshCache().then(() => {
     uni.showToast({
       title: "刷新缓存成功",
@@ -175,103 +163,66 @@ function refreshCache() {
       duration: 1000, // 显示时间，单位为毫秒，设置为 0 则不会自动消失
     });
   });
-}
+}, 1000);
 
-function itemClicked(item: ConfigPageVO) {
-  console.log(item);
-
+/**
+ * 编辑
+ */
+function handleEdit(item: ConfigPageVO) {
   // 直接传递整个 item 对象
   uni.navigateTo({
-    url: "/pages/work/system/config/item?item=" + encodeURIComponent(JSON.stringify(item)),
+    url: "/pages/work/config/edit?item=" + encodeURIComponent(JSON.stringify(item)),
   });
 }
 
-// 新增 onShow 方法
-onShow(() => {
-  handleQuery(); // 重新加载数据
+/**
+ * 删除
+ */
+function handleDelete(item: ConfigPageVO) {
+  uni.showModal({
+    title: "提示",
+    content: "确定要删除该配置吗？",
+    success: async (res) => {
+      if (res.confirm) {
+        if (item.id) {
+          ConfigAPI.deleteById(item.id).then(() => {
+            uni.showToast({ title: "删除成功", icon: "success" });
+          });
+        }
+      }
+    },
+  });
+}
+
+/**
+ * 操作
+ */
+function handleAction(item: ConfigPageVO) {
+  const actions = ["编辑", "删除"];
+  uni.showActionSheet({
+    itemList: actions,
+    success: ({ tapIndex }) => {
+      switch (actions[tapIndex]) {
+        case "编辑":
+          handleEdit(item);
+          break;
+        case "删除":
+          handleDelete(item);
+          break;
+      }
+    },
+  });
+}
+
+onMounted(() => {
+  handleQuery();
 });
 
+/**
+ * 页面返回回来也要重新加载数据
+ */
 onLoad(() => {
+  queryParams.pageNum = 1;
   handleQuery();
 });
 </script>
-<style lang="scss" scoped>
-/* stylelint-disable selector-type-no-unknown */
-page {
-  background: #f8f8f8;
-}
-
-/* stylelint-enable selector-type-no-unknown */
-
-.work {
-  padding: 40rpx 0;
-}
-
-::v-deep .wd-drop-menu__item {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 50rpx;
-}
-
-.list-container {
-  height: calc(100vh - 350rpx); /* 调整高度以避免被底部按钮挡住 */
-  overflow-y: auto;
-}
-
-.card {
-  background-color: #fff;
-  border-radius: 8rpx;
-  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
-}
-
-.card-content {
-  padding: 10rpx;
-}
-
-.item {
-  //margin-bottom: 20rpx;
-}
-
-.title {
-  margin-bottom: 10rpx;
-  font-weight: bold;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 10rpx;
-  padding: 10rpx;
-  margin: 10rpx;
-  background: #f5f5f5;
-}
-
-.row-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10rpx;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  gap: 0rpx; /* 调整 label 和 value 之间的间距 */
-  align-items: center;
-  justify-content: space-between;
-  width: 100%; /* 调整宽度以适应两列布局 */
-  margin-left: 20rpx;
-}
-
-.label {
-  flex: 1; /* 让 label 占据剩余空间的一部分 */
-  font-size: 24rpx;
-}
-
-.value {
-  flex: 3; /* 让 value 占据剩余空间的大部分 */
-  font-size: 22rpx;
-  color: #999;
-}
-</style>

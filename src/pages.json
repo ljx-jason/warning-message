@@ -56,9 +56,9 @@
       }
     },
     {
-      "path": "pages/work/config/item",
+      "path": "pages/work/config/edit",
       "style": {
-        "navigationBarTitleText": "配置详情"
+        "navigationBarTitleText": "新增修改配置页面"
       }
     },
     {
