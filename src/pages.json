@@ -56,12 +56,6 @@
       }
     },
     {
-      "path": "pages/work/config/edit",
-      "style": {
-        "navigationBarTitleText": "新增修改配置页面"
-      }
-    },
-    {
       "path": "pages/work/notice/index",
       "style": {
         "navigationBarTitleText": "通知公告"

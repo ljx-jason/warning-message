@@ -8,17 +8,18 @@
         </h2>
         <div class="notice-meta">
           <div class="meta-row">
-            <span>发布人：{{ noticeDetail.publisherName }}</span>
-            <wd-divider direction="vertical" />
-            <span>发布时间：{{ formatDate(noticeDetail.publishTime ?? "") }}</span>
-          </div>
-          <div class="meta-row">
-            <span class="priority-wrapper">
+            <span>
               优先级：
-              <wd-tag :type="getLevelType(noticeDetail.level) as TagType">
+              <wd-tag :type="getLevelType(noticeDetail.level)">
                 {{ getLevelText(noticeDetail.level) }}
               </wd-tag>
             </span>
+          </div>
+          <div class="meta-row">
+            <span>发布人：{{ noticeDetail.publisherName }}</span>
+          </div>
+          <div class="meta-row">
+            <span>发布时间：{{ noticeDetail.publishTime }}</span>
           </div>
         </div>
       </div>
@@ -29,10 +30,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import type { NoticeDetailVO } from "@/api/system/notice";
 import NoticeAPI from "@/api/system/notice";
-import { TagType } from "wot-design-uni/components/wd-tag/types";
 
 const noticeDetail = ref<NoticeDetailVO>({});
 
@@ -44,8 +43,8 @@ const getLevelText = (level?: string) => {
   };
   return textMap[level || "L"];
 };
-const getLevelType = (level?: string) => {
-  const typeMap: Record<string, string> = {
+const getLevelType = (level?: string): "primary" | "warning" | "danger" => {
+  const typeMap: Record<string, "primary" | "warning" | "danger"> = {
     L: "primary",
     M: "warning",
     H: "danger",
@@ -65,15 +64,6 @@ const getNoticeDetail = async (id: string) => {
   } catch (error) {
     console.error("获取通知详情失败：", error);
   }
-};
-
-/**
- * 格式化日期
- * @param date 日期
- * @returns 格式化后的日期
- */
-const formatDate = (date: string | Date): string => {
-  return date ? date.toString().split(" ")[0] : "-";
 };
 
 onLoad((options: any) => {

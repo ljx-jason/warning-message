@@ -12,8 +12,10 @@
             placeholder="请输入关键字"
           />
           <view class="flex flex-row items-center mb-20rpx">
-            <wd-button class="mt-20rpx mb-20rpx" size="medium" @click="search()">查询</wd-button>
-            <wd-button size="medium" type="info" @click="reset">重置</wd-button>
+            <wd-button class="mt-20rpx mb-20rpx" size="medium" @click="handleQuery()">
+              查询
+            </wd-button>
+            <wd-button size="medium" type="info" @click="handleReset">重置</wd-button>
           </view>
         </view>
       </wd-drop-menu-item>
@@ -57,9 +59,7 @@
           </wd-row>
 
           <template #footer>
-            <view class="flex justify-end pr-20rpx">
-              <wd-button size="small" type="primary" @click="handleAction(item)">操作</wd-button>
-            </view>
+            <wd-button size="small" type="primary" @click="handleAction(item)">···</wd-button>
           </template>
         </wd-card>
       </view>
@@ -69,10 +69,55 @@
     <wd-loadmore :state="state" @reload="handleQuery" />
 
     <!-- 底部按钮 -->
-    <view class="fixed bottom-0 left-0 right-0 flex justify-around p-20rpx bg-#fff">
-      <wd-button size="medium" type="primary" @click="add">添加</wd-button>
+    <view class="fixed bottom-0 w-full flex justify-around items-center p-20rpx bg-#fff">
+      <wd-button size="medium" type="primary" @click="handleOpenDialog">添加</wd-button>
       <wd-button size="medium" type="success" @click="refreshCache">刷新缓存</wd-button>
     </view>
+
+    <wd-popup v-model="showEditPopup" position="bottom">
+      <view class="p-20rpx">
+        <wd-form ref="formRef" :model="form">
+          <wd-input
+            v-model="form.configName"
+            label="配置名称"
+            type="text"
+            placeholder="请输入配置名称"
+            :rules="[{ required: true, message: '请填写配置名称' }]"
+          />
+          <wd-input
+            v-model="form.configKey"
+            label="配置键名"
+            type="text"
+            placeholder="请输入配置键名"
+            :rules="[{ required: true, message: '请填写配置键' }]"
+          />
+          <wd-input
+            v-model="form.configValue"
+            label="配置键值"
+            type="text"
+            placeholder="请输入配置键值"
+            :rules="[{ required: true, message: '请填写配置值' }]"
+          />
+          <wd-textarea
+            v-model="form.remark"
+            prop="remark"
+            label="配置描述"
+            label-align="right"
+            clearable
+            :maxlength="100"
+            show-word-limit
+            label-width="100px"
+            placeholder="请输入配置描述"
+          />
+        </wd-form>
+        <view class="flex justify-around mt-20rpx">
+          <wd-button @click="showEditPopup = false">取消</wd-button>
+          <wd-button type="primary" native-type="submit" :loading="loading" @click="submitForm">
+            确定
+          </wd-button>
+        </view>
+      </view>
+    </wd-popup>
   </view>
 </template>
 
@@ -80,7 +125,8 @@
 import ConfigAPI, { ConfigPageVO, ConfigForm, ConfigPageQuery } from "@/api/system/config";
 import { DropMenuItemExpose } from "wot-design-uni/components/wd-drop-menu-item/types";
 import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
-import { debounce } from "@/utils/commonUtil";
+import { FormInstance } from "wot-design-uni/components/wd-form/types";
+import { debounce } from "@/utils";
 const state = ref<LoadMoreState>("loading"); // 加载状态 loading, finished:, error
 const total = ref(0);
 const queryParams = reactive<ConfigPageQuery>({
@@ -90,6 +136,9 @@ const queryParams = reactive<ConfigPageQuery>({
 });
 // 系统配置表格数据
 const pageData = ref<ConfigPageVO[]>([]);
+const formRef = ref<FormInstance>();
+
+const loading = ref(false);
 /**
  * 搜索栏
  */
@@ -98,17 +147,57 @@ const dropMenu = ref<DropMenuItemExpose>();
 /**
  * 搜索
  */
-function search() {
+function handleQuery() {
   pageData.value = [];
   dropMenu.value?.close();
   queryParams.pageNum = 1;
-  handleQuery();
+  loadmore();
+}
+
+const showEditPopup = ref(false);
+const form = ref<ConfigForm>({});
+
+// 修改编辑函数
+function handleEdit(id: number) {
+  ConfigAPI.getFormData(id).then((data) => {
+    Object.assign(form.value, data);
+    // 显示弹窗
+    showEditPopup.value = true;
+  });
+}
+
+// 提交表单
+async function submitForm() {
+  loading.value = true;
+  try {
+    if (formRef.value) {
+      formRef.value!.validate().then(async ({ valid, errors }) => {
+        if (valid) {
+          if (form.value.id) {
+            await ConfigAPI.update(form.value.id, form.value);
+            uni.showToast({ title: "更新成功", icon: "success" });
+          } else {
+            await ConfigAPI.add(form.value);
+            uni.showToast({ title: "添加成功", icon: "success" });
+          }
+          showEditPopup.value = false;
+          handleQuery(); // 刷新列表
+        } else {
+          uni.showToast({ title: "请检查表单", icon: "error" });
+          loading.value = false;
+        }
+      });
+    }
+  } catch (error) {
+    uni.showToast({ title: "操作失败", icon: "error" });
+    loading.value = false;
+  }
 }
 
 /**
  * 重置搜索条件
  */
-function reset() {
+function handleReset() {
   queryParams.pageNum = 1;
   queryParams.keywords = "";
   pageData.value = [];
@@ -125,9 +214,9 @@ onReachBottom(() => {
 });
 
 /**
- * 查询
+ * 加载更多
  */
-function handleQuery() {
+function loadmore() {
   state.value = "loading";
   ConfigAPI.getPage(queryParams)
     .then((data) => {
@@ -146,10 +235,13 @@ function handleQuery() {
 /**
  * 添加
  */
-function add() {
-  uni.navigateTo({
-    url: "/pages/work/config/edit",
-  });
+function handleOpenDialog() {
+  form.id = undefined;
+  form.configName = "";
+  form.configKey = "";
+  form.configValue = "";
+  form.remark = "";
+  showEditPopup.value = true;
 }
 
 /**
@@ -164,16 +256,6 @@ const refreshCache = debounce(() => {
     });
   });
 }, 1000);
-
-/**
- * 编辑
- */
-function handleEdit(item: ConfigPageVO) {
-  // 直接传递整个 item 对象
-  uni.navigateTo({
-    url: "/pages/work/config/edit?item=" + encodeURIComponent(JSON.stringify(item)),
-  });
-}
 
 /**
  * 删除
@@ -204,7 +286,7 @@ function handleAction(item: ConfigPageVO) {
     success: ({ tapIndex }) => {
       switch (actions[tapIndex]) {
         case "编辑":
-          handleEdit(item);
+          handleEdit(item.id || 0);
           break;
         case "删除":
           handleDelete(item);
