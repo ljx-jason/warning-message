@@ -2,7 +2,8 @@
   "easycom": {
     "autoscan": true,
     "custom": {
-      "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue"
+      "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue",
+      "^dict-(.*)": "@/components/dict/$1.vue"
     }
   },
 
@@ -53,12 +54,6 @@
       "path": "pages/work/config/index",
       "style": {
         "navigationBarTitleText": "系统配置"
-      }
-    },
-    {
-      "path": "pages/work/config/edit",
-      "style": {
-        "navigationBarTitleText": "新增修改配置页面"
       }
     },
     {

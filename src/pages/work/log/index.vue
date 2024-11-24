@@ -17,9 +17,11 @@
             allow-same-day
             @confirm="handleConfirm"
           />
-          <view class="flex flex-row items-center mb-20rpx">
-            <wd-button class="mt-20rpx mb-20rpx" size="medium" @click="search()">查询</wd-button>
-            <wd-button size="medium" type="info" @click="reset">重置</wd-button>
+          <view class="flex-between mb-20rpx">
+            <wd-button class="mt-20rpx mb-20rpx" size="medium" @click="handleSearch">
+              查询
+            </wd-button>
+            <wd-button size="medium" type="info" @click="handleReset">重置</wd-button>
           </view>
         </view>
       </wd-drop-menu-item>
@@ -90,7 +92,7 @@ function handleConfirm({ value }: Ref<number[]>) {
  * 搜索栏
  */
 const dropMenu = ref<DropMenuItemExpose>();
-function search() {
+function handleSearch() {
   pageData.value = [];
   dropMenu.value?.close();
   handleQuery();
@@ -99,7 +101,7 @@ function search() {
 /**
  * 重置搜索条件
  */
-function reset() {
+function handleReset() {
   queryParams.pageNum = 1;
   queryParams.keywords = "";
   queryParams.createTime = ["", ""];
