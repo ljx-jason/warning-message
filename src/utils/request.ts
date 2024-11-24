@@ -16,7 +16,7 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
         ...options.header,
         Authorization: getToken() ? `Bearer ${getToken()}` : "",
       },
-      data: handleData(options.data),
+      data: handleData(options.data, options.method),
       success: (response) => {
         console.log("success response", response);
         const resData = response.data as ResponseData<T>;
@@ -66,7 +66,12 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
  * @param data 请求数据
  * @returns 处理后的数据
  */
-function handleData(data: any) {
+function handleData(data: any, method: string) {
+  // 非微信小程序，且非GET请求，则不处理数据
+  const appInfo = uni.getAppBaseInfo();
+  if (method !== "GET" && appInfo.hostName !== "WeChat") {
+    return data;
+  }
   if (!data) return data;
 
   // 如果是对象，遍历处理每个属性
