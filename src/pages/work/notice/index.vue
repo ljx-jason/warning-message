@@ -70,7 +70,7 @@
               <view>紧急程度：</view>
             </wd-col>
             <wd-col :span="16">
-              <view>{{ getLevelType(item.level) || "-" }}</view>
+              <dict-label code="notice_level" :model-value="item.level" />
             </wd-col>
           </wd-col>
         </wd-row>

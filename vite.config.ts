@@ -1,6 +1,7 @@
 import { defineConfig, type UserConfig, type ConfigEnv, loadEnv } from "vite";
 import uni from "@dcloudio/vite-plugin-uni";
 import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
 
 export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => {
   const UnoCss = await import("unocss/vite").then((i) => i.default);
@@ -32,6 +33,9 @@ export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => 
         },
       }),
       uni(),
+      Components({
+        dirs: ["src/components", "src/pages/**/components"],
+      }),
     ],
   };
 });

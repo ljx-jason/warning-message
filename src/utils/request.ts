@@ -16,7 +16,7 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
         ...options.header,
         Authorization: getToken() ? `Bearer ${getToken()}` : "",
       },
-      data: handleData(options.data, options.method),
+      data: handleData(options.data, options.method || "GET"),
       success: (response) => {
         console.log("success response", response);
         const resData = response.data as ResponseData<T>;

@@ -35,7 +35,7 @@
 <script lang="ts" setup>
 import { type LoginFormData } from "@/api/auth";
 import { useUserStore } from "@/store/modules/user";
-
+import { useDictStore } from "@/store/modules/dict";
 const loginFormRef = ref();
 
 const loginFormData = ref<LoginFormData>({
@@ -44,7 +44,7 @@ const loginFormData = ref<LoginFormData>({
 });
 
 const userStore = useUserStore();
-
+const dictStore = useDictStore();
 // 登录处理
 const handleLogin = () => {
   loginFormRef.value.validate().then(async ({ valid }: { valid: boolean }) => {
@@ -52,6 +52,7 @@ const handleLogin = () => {
       try {
         await userStore.login(loginFormData.value); // 等待登录和获取用户信息完成
         await userStore.getInfo(); // 等待用户信息获取完成
+        await dictStore.loadDictionaries(); // 等待字典数据加载完成
         uni.showToast({ title: "登录成功", icon: "success" });
         const pages = getCurrentPages(); // 获取当前的页面栈
 

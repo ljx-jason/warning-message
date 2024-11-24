@@ -8,19 +8,11 @@
         </h2>
         <div class="notice-meta">
           <div class="meta-row">
-            <span>
-              优先级：
-              <wd-tag :type="getLevelType(noticeDetail.level)">
-                {{ getLevelText(noticeDetail.level) }}
-              </wd-tag>
-            </span>
+            优先级：
+            <dict-label code="notice_level" :model-value="noticeDetail.level" />
           </div>
-          <div class="meta-row">
-            <span>发布人：{{ noticeDetail.publisherName }}</span>
-          </div>
-          <div class="meta-row">
-            <span>发布时间：{{ noticeDetail.publishTime }}</span>
-          </div>
+          <div class="meta-row">发布人：{{ noticeDetail.publisherName }}</div>
+          <div class="meta-row">发布时间：{{ noticeDetail.publishTime }}</div>
         </div>
       </div>
       <wd-divider />
