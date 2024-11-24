@@ -1,5 +1,6 @@
 <template>
   <view class="home">
+    <view style=" width: 100%;height: var(--status-bar-height)" />
     <wd-swiper
       v-model:current="current"
       :list="swiperList"

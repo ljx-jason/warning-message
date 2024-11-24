@@ -1,13 +1,14 @@
 <template>
-  <wd-navbar title="用户管理">
-    <template #left>
-      <wd-icon name="thin-arrow-left" @click="handleNavigateback()" />
-    </template>
-    <template #right>
-      <wd-icon name="add-circle" @click="handleOpenDialog()" />
-    </template>
-  </wd-navbar>
   <view class="user">
+    <view style=" width: 100%;height: var(--status-bar-height)" />
+    <wd-navbar title="用户管理">
+      <template #left>
+        <wd-icon name="thin-arrow-left" @click="handleNavigateback()" />
+      </template>
+      <template #right>
+        <wd-icon name="add-circle" @click="handleOpenDialog()" />
+      </template>
+    </wd-navbar>
     <!-- 排序筛选 -->
     <view class="mb-24rpx">
       <wd-drop-menu>
@@ -27,6 +28,12 @@
           </view>
         </wd-drop-menu-item>
       </wd-drop-menu>
+
+      <view>
+        <wd-text text="共" size="12px" />
+        <wd-text :text="total" size="12px" />
+        <wd-text text="条数据" size="12px" />
+      </view>
     </view>
 
     <!-- 用户卡片 -->
@@ -59,23 +66,28 @@
       </wd-cell-group>
 
       <template #footer>
-        <wd-swipe-action>
-          <view class="flex-between">
-            <view>
-              <wd-text text="创建时间：" size="12px" />
-              <wd-text :text="item.createTime" size="12px" />
-            </view>
-            <view>
-              <wd-button size="small" plain @click="handleOpenDialog(item.id)">编辑</wd-button>
+        <view class="flex-between">
+          <view>
+            <wd-text text="创建时间：" size="12px" />
+            <wd-text :text="item.createTime" size="12px" />
+          </view>
+          <view class="flex-end">
+            <wd-button type="primary" size="small" plain @click="handleOpenDialog(item.id)">
+              编辑
+            </wd-button>
+            <view class="ml-2">
+              <wd-drop-menu>
+                <wd-drop-menu-item ref="dropMenu" title="更多" icon="more">
+                  <view class="text-right m-5">
+                    <wd-button type="error" size="small" plain @click="handleDelete(item.id)">
+                      删除
+                    </wd-button>
+                  </view>
+                </wd-drop-menu-item>
+              </wd-drop-menu>
             </view>
           </view>
-
-          <template #right>
-            <wd-button type="error" plain size="small" @click="handleDelete(item.id)">
-              删除
-            </wd-button>
-          </template>
-        </wd-swipe-action>
+        </view>
       </template>
     </wd-card>
 
@@ -112,7 +124,6 @@
       </view>
     </wd-popup>
 
-    <wd-loading v-show="loading" />
     <!-- <wd-fab position="left-bottom" :expandable="false" @click="handleOpenDialog" /> -->
   </view>
 </template>
