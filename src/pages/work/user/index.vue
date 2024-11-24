@@ -1,26 +1,30 @@
 <template>
   <view class="user">
-    <view style=" width: 100%;height: var(--status-bar-height)" />
+    <view style="width: 100%; height: var(--status-bar-height)" />
     <wd-navbar title="用户管理">
       <template #left>
         <wd-icon name="thin-arrow-left" @click="handleNavigateback()" />
-      </template>
-      <template #right>
-        <wd-icon name="add-circle" @click="handleOpenDialog()" />
       </template>
     </wd-navbar>
     <!-- 排序筛选 -->
     <view class="mb-24rpx">
       <wd-drop-menu>
-        <wd-drop-menu-item v-model="sortValue" :options="sortOptions" @change="handleSortChange" />
-        <wd-drop-menu-item ref="dropMenuRef" title="筛选">
+        <wd-drop-menu-item
+          v-model="sortValue"
+          :options="sortOptions"
+          title="排序"
+          @change="handleSortChange"
+        />
+        <wd-drop-menu-item ref="filterDropMenu" title="筛选">
           <view>
             <wd-input
               v-model="queryParams.keywords"
               label="关键字"
               placeholder="用户名/昵称/手机号"
             />
-            <wd-datetime-picker v-model="createTimeRange" type="date" label="创建时间" />
+
+            <wd-calendar v-model="createTimeRange" label="创建时间" type="daterange" />
+
             <view class="flex-between py-2">
               <wd-button class="w-20%" type="info" @click="hendleResetQuery">重置</wd-button>
               <wd-button class="w-70%" @click="handleQuery">确定</wd-button>
@@ -28,12 +32,6 @@
           </view>
         </wd-drop-menu-item>
       </wd-drop-menu>
-
-      <view>
-        <wd-text text="共" size="12px" />
-        <wd-text :text="total" size="12px" />
-        <wd-text text="条数据" size="12px" />
-      </view>
     </view>
 
     <!-- 用户卡片 -->
@@ -67,31 +65,25 @@
 
       <template #footer>
         <view class="flex-between">
-          <view>
-            <wd-text text="创建时间：" size="12px" />
-            <wd-text :text="item.createTime" size="12px" />
+          <view class="text-left">
+            <wd-text text="创建时间：" size="small" class="font-bold" />
+            <wd-text :text="item.createTime" size="small" />
           </view>
-          <view class="flex-end">
+          <view class="text-right">
             <wd-button type="primary" size="small" plain @click="handleOpenDialog(item.id)">
               编辑
             </wd-button>
-            <view class="ml-2">
-              <wd-drop-menu>
-                <wd-drop-menu-item ref="dropMenu" title="更多" icon="more">
-                  <view class="text-right m-5">
-                    <wd-button type="error" size="small" plain @click="handleDelete(item.id)">
-                      删除
-                    </wd-button>
-                  </view>
-                </wd-drop-menu-item>
-              </wd-drop-menu>
-            </view>
+            &nbsp;
+            <wd-button type="error" size="small" plain @click="handleDelete(item.id)">
+              删除
+            </wd-button>
           </view>
         </view>
       </template>
     </wd-card>
 
     <wd-loadmore v-if="total > 0" :state="state" @reload="loadmore" />
+    <wd-status-tip v-else-if="total == 0" image="search" tip="当前搜索无结果" />
     <wd-message-box />
 
     <!-- 编辑弹窗 -->
@@ -106,7 +98,7 @@
             :columns="roleOptions"
             required
           />
-          <vut-picker
+          <CuPicker
             v-model="formData.deptId"
             v-model:data="deptOptions"
             label="部门"
@@ -124,7 +116,12 @@
       </view>
     </wd-popup>
 
-    <!-- <wd-fab position="left-bottom" :expandable="false" @click="handleOpenDialog" /> -->
+    <wd-fab
+      position="left-bottom"
+      :expandable="false"
+      customStyle="width: 1rem; height: 1rem; line-height: 1rem;z-index:9"
+      @click="handleOpenDialog"
+    />
   </view>
 </template>
 
@@ -137,7 +134,7 @@ import UserAPI, { type UserPageQuery, UserPageVO, UserForm } from "@/api/system/
 import RoleAPI from "@/api/system/role";
 import DeptAPI from "@/api/system/dept";
 
-import VutPicker from "@/components/VutPicker.vue";
+import CuPicker from "@/components/CuPicker.vue";
 
 const message = useMessage();
 
@@ -145,8 +142,9 @@ const loading = ref(false);
 const state = ref<LoadMoreState>("loading");
 const dataList = ref<UserPageVO[]>([]);
 
-const sortValue = ref(1);
+const sortValue = ref(0);
 const sortOptions = ref<Record<string, any>[]>([
+  { label: "默认排序", value: 0 },
   { label: "最近创建", value: 1 },
   { label: "最近更新", value: 2 },
 ]);
@@ -158,7 +156,7 @@ const queryParams: UserPageQuery = {
 
 const createTimeRange = ref<any[]>([null, null]);
 
-const dropMenuRef = ref();
+const filterDropMenu = ref();
 
 const total = ref(0);
 const dialog = reactive({
@@ -232,6 +230,9 @@ const handleSortChange = ({ value }: { value: number }) => {
   } else if (value === 2) {
     queryParams.field = "update_time";
     queryParams.direction = "DESC";
+  } else {
+    queryParams.field = "";
+    queryParams.direction = "";
   }
   handleQuery();
 };
@@ -240,7 +241,7 @@ const handleSortChange = ({ value }: { value: number }) => {
  * 查询
  */
 const handleQuery = () => {
-  dropMenuRef.value?.close();
+  filterDropMenu.value?.close();
   queryParams.pageNum = 1;
 
   // 格式化时间范围
@@ -264,9 +265,10 @@ const handleQuery = () => {
  * 重置查询
  */
 const hendleResetQuery = () => {
-  dropMenuRef.value?.close();
+  filterDropMenu.value?.close();
   queryParams.pageNum = 1;
   queryParams.keywords = "";
+  queryParams.createTime = "";
   createTimeRange.value = ["", ""];
   loadmore();
 };
@@ -393,6 +395,10 @@ onLoad(() => {
   :deep(.wd-cell) {
     padding-right: 10rpx;
     background: #f8f8f8;
+  }
+  :deep(.wd-fab__trigger) {
+    width: 80rpx !important;
+    height: 80rpx !important;
   }
 }
 </style>

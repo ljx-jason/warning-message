@@ -1,6 +1,6 @@
 <template>
   <view class="home">
-    <view style=" width: 100%;height: var(--status-bar-height)" />
+    <view style="width: 100%; height: var(--status-bar-height)" />
     <wd-swiper
       v-model:current="current"
       :list="swiperList"
@@ -36,18 +36,6 @@
 
     <!-- 数据统计 -->
     <wd-grid :column="2" class="mt-2" :gutter="2">
-      <wd-grid-item use-slot custom-class="custom-item">
-        <view class="flex justify-start pl-5">
-          <view class="flex-center">
-            <image class="w-80rpx h-80rpx rounded-8rpx" src="/static/icons/online.png" />
-            <view class="ml-5 text-left">
-              <view class="font-bold">在线用户</view>
-              <view class="mt-1">1</view>
-            </view>
-          </view>
-        </view>
-      </wd-grid-item>
-
       <wd-grid-item
         v-for="(item, index) in visitStatsData"
         :key="index"
@@ -94,9 +82,10 @@
 <script setup lang="ts">
 import { dayjs } from "wot-design-uni";
 
-import LogAPI, { VisitTrendVO, VisitTrendQuery, VisitStatsVO } from "@/api/system/log";
+import LogAPI, { VisitStatsVO } from "@/api/system/log";
 
 interface VisitStats {
+  type: string;
   title: string;
   icon: string;
   growthRate: number;
@@ -106,7 +95,40 @@ interface VisitStats {
 
 const current = ref<number>(0);
 
-const visitStatsData = ref<VisitStats[] | null>(Array(3).fill({}));
+const visitStatsData = ref<VisitStats[] | null>([
+  {
+    type: "online",
+    title: "在线用户数",
+    icon: "/static/icons/online.png",
+    growthRate: 0,
+    granularity: "-",
+    todayCount: 1,
+  },
+  {
+    type: "pv",
+    title: "浏览量(PV)",
+    icon: "/static/icons/pv.png",
+    growthRate: 0,
+    granularity: "日",
+    todayCount: 0,
+  },
+  {
+    type: "uv",
+    title: "(UV)",
+    icon: "/static/icons/visit.png",
+    growthRate: 0,
+    granularity: "日",
+    todayCount: 0,
+  },
+  {
+    type: "ip",
+    title: "访问客户端",
+    icon: "/static/icons/client.png",
+    growthRate: 0,
+    granularity: "日",
+    todayCount: 0,
+  },
+]);
 
 // 图表数据
 const chartData = ref({});
@@ -160,23 +182,14 @@ function onChange(e: any) {
 // 加载访问统计数据
 const loadVisitStatsData = async () => {
   const list: VisitStatsVO[] = await LogAPI.getVisitStats();
-  if (list) {
-    const iconList = [
-      "/static/icons/pv.png",
-      "/static/icons/visit.png",
-      "/static/icons/client.png",
-    ];
 
-    const transformedList: VisitStats[] = list.map((item, index) => ({
-      title: item.title,
-      icon: iconList[index],
-      growthRate: item.growthRate,
-      granularity: "日",
-      todayCount: item.todayCount,
-      totalCount: item.totalCount,
-    }));
-    visitStatsData.value = transformedList;
-  }
+  visitStatsData.value?.forEach((item) => {
+    const data = list.find((v) => v.type === item.type);
+    if (data) {
+      item.todayCount = data.todayCount;
+      item.growthRate = data.growthRate;
+    }
+  });
 };
 
 // 加载访问趋势数据
