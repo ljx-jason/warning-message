@@ -114,7 +114,7 @@ const visitStatsData = ref<VisitStats[] | null>([
   },
   {
     type: "uv",
-    title: "(UV)",
+    title: "访客数(UV)",
     icon: "/static/icons/visit.png",
     growthRate: 0,
     granularity: "日",
@@ -122,7 +122,7 @@ const visitStatsData = ref<VisitStats[] | null>([
   },
   {
     type: "ip",
-    title: "访问客户端",
+    title: "IP数",
     icon: "/static/icons/client.png",
     growthRate: 0,
     granularity: "日",
@@ -153,10 +153,10 @@ const navList = reactive([
     prem: "sys:user:query",
   },
   {
-    icon: "/static/icons/config.png",
-    title: "系统配置",
-    url: "/pages/work/config/index",
-    prem: "sys:config:query",
+    icon: "/static/icons/role.png",
+    title: "角色管理",
+    url: "/pages/work/role/index",
+    prem: "sys:role:query",
   },
   {
     icon: "/static/icons/notice.png",
@@ -165,10 +165,10 @@ const navList = reactive([
     prem: "sys:notice:query",
   },
   {
-    icon: "/static/icons/log.png",
-    title: "操作日志",
-    url: "/pages/work/log/index",
-    prem: "sys:log:query",
+    icon: "/static/icons/config.png",
+    title: "系统配置",
+    url: "/pages/work/config/index",
+    prem: "sys:config:query",
   },
 ]);
 
