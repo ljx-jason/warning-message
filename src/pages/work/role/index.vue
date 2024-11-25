@@ -48,7 +48,7 @@
               <wd-text :text="item.createTime" size="small" />
             </view>
             <view class="flex-right">
-              <wd-button type="icon" icon="more" @click="handleAction(item)" />
+              <wd-button size="small" plain @click="handleAction(item)">操作</wd-button>
             </view>
           </view>
         </template>
