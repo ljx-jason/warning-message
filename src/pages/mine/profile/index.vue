@@ -66,7 +66,7 @@
     <wd-img-cropper v-model="avatarShow" :img-src="originalSrc" @confirm="handleAvatarConfirm" />
 
     <!--用户信息编辑弹出框-->
-    <wd-popup v-model="dialog.visible" position="bottom" custom-style="min-height: 200px;">
+    <wd-popup v-model="dialog.visible" position="bottom">
       <wd-form
         v-if="dialog.type === DialogType.ACCOUNT"
         ref="userProfileFormRef"
@@ -77,12 +77,12 @@
           <wd-input
             v-model="userProfileForm.nickname"
             label="昵称"
-            label-width="80px"
+            label-width="160rpx"
             placeholder="请输入昵称"
             prop="nickname"
             :rules="rules.nickname"
           />
-          <wd-cell title="性别" title-width="80px" center prop="gender" :rules="rules.gender">
+          <wd-cell title="性别" title-width="160rpx" center prop="gender" :rules="rules.gender">
             <wd-radio-group v-model="userProfileForm.gender" shape="button" class="ef-radio-group">
               <wd-radio :value="1">男</wd-radio>
               <wd-radio :value="2">女</wd-radio>
@@ -103,7 +103,7 @@
           <wd-input
             v-model="passwordChangeForm.oldPassword"
             label="原密码"
-            label-width="80px"
+            label-width="160rpx"
             show-password
             clearable
             placeholder="请输入原密码"
@@ -113,7 +113,7 @@
           <wd-input
             v-model="passwordChangeForm.newPassword"
             label="新密码"
-            label-width="80px"
+            label-width="160rpx"
             show-password
             clearable
             placeholder="请输入新密码"
@@ -123,7 +123,7 @@
           <wd-input
             v-model="passwordChangeForm.confirmPassword"
             label="确认密码"
-            label-width="80px"
+            label-width="160rpx"
             show-password
             clearable
             placeholder="请确认新密码"
@@ -145,7 +145,7 @@
           <wd-input
             v-model="mobileBindingForm.mobile"
             label="手机号码"
-            label-width="80px"
+            label-width="160rpx"
             clearable
             placeholder="请输入手机号码"
             prop="mobile"
@@ -154,7 +154,7 @@
           <wd-input
             v-model="mobileBindingForm.code"
             label="验证码"
-            label-width="80px"
+            label-width="160rpx"
             clearable
             placeholder="请输入验证码"
             prop="code"
@@ -185,7 +185,7 @@
           <wd-input
             v-model="emailBindingForm.email"
             label="邮箱"
-            label-width="80px"
+            label-width="160rpx"
             clearable
             placeholder="请输入邮箱"
             prop="email"
@@ -194,7 +194,7 @@
           <wd-input
             v-model="emailBindingForm.code"
             label="验证码"
-            label-width="80px"
+            label-width="160rpx"
             clearable
             placeholder="请输入验证码"
             prop="code"
@@ -459,8 +459,8 @@ function touchmoveListener(event) {
 </script>
 <style lang="scss" scoped>
 .profile-card {
-  padding: 5px;
-  margin-bottom: 12px;
+  padding: 10rpx;
+  margin-bottom: 24rpx;
   line-height: 1.1;
   background-color: rgb(255, 255, 255);
   border-radius: 16px;
@@ -494,13 +494,13 @@ function touchmoveListener(event) {
   }
 }
 .edit-form {
-  padding-top: 20px;
+  padding-top: 40rpx;
   .ef-radio-group {
     line-height: 1;
     text-align: left;
   }
   .footer {
-    padding: 12px;
+    padding: 24rpx;
   }
 }
 </style>
