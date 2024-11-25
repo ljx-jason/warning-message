@@ -36,6 +36,7 @@ const gridList = reactive([
       {
         icon: "/static/icons/role.png",
         title: "角色管理",
+        url: "/pages/work/role/index",
         prem: "sys:role:query",
       },
       {
