@@ -2,19 +2,19 @@ import request from "@/utils/request";
 
 const LOG_BASE_URL = "/api/v1/logs";
 
-class LogAPI {
+const LogAPI = {
   /**
    * 获取日志分页列表
    *
    * @param queryParams 查询参数
    */
-  static getPage(queryParams: LogPageQuery) {
-    return request<PageResult<LogPageVO[]>>({
+  getPage(queryParams: LogPageQuery) {
+    return request<PageResult<LogVO[]>>({
       url: `${LOG_BASE_URL}/page`,
       method: "GET",
       data: queryParams,
     });
-  }
+  },
 
   /**
    * 获取访问趋势
@@ -22,13 +22,13 @@ class LogAPI {
    * @param queryParams
    * @returns
    */
-  static getVisitTrend(queryParams: VisitTrendQuery) {
+  getVisitTrend(queryParams: VisitTrendQuery) {
     return request<VisitTrendVO>({
       url: `${LOG_BASE_URL}/visit-trend`,
       method: "GET",
       data: queryParams,
     });
-  }
+  },
 
   /**
    * 获取访问趋势
@@ -36,13 +36,13 @@ class LogAPI {
    * @param queryParams
    * @returns
    */
-  static getVisitStats() {
+  getVisitStats() {
     return request<VisitStatsVO[]>({
       url: `${LOG_BASE_URL}/visit-stats`,
       method: "GET",
     });
-  }
-}
+  },
+};
 
 export default LogAPI;
 
@@ -51,15 +51,15 @@ export default LogAPI;
  */
 export interface LogPageQuery extends PageQuery {
   /** 搜索关键字 */
-  keywords: string;
+  keywords?: string;
   /** 操作时间 */
-  createTime: [string, string];
+  createTime?: [string, string] | string;
 }
 
 /**
  * 系统日志分页VO
  */
-export interface LogPageVO {
+export interface LogVO {
   /** 主键 */
   id?: number;
   /** 日志模块 */

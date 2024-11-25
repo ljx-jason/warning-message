@@ -23,11 +23,11 @@
               placeholder="用户名/昵称/手机号"
             />
 
-            <wd-calendar v-model="createTimeRange" label="创建时间" type="daterange" />
+            <cu-date-query v-model="queryParams.createTime" label="创建时间" />
 
             <view class="flex-between py-2">
               <wd-button class="w-20%" type="info" @click="hendleResetQuery">重置</wd-button>
-              <wd-button class="w-70%" @click="handleQuery">确定</wd-button>
+              <wd-button class="w-70%" @click="handleQuery">查询</wd-button>
             </view>
           </view>
         </wd-drop-menu-item>
@@ -35,7 +35,7 @@
     </view>
 
     <!-- 用户卡片 -->
-    <wd-card v-for="item in dataList">
+    <wd-card v-for="item in pageData">
       <template #title>
         <view class="flex-between">
           <view class="flex-center">
@@ -82,7 +82,7 @@
       </template>
     </wd-card>
 
-    <wd-loadmore v-if="total > 0" :state="state" @reload="loadmore" />
+    <wd-loadmore v-if="total > 0" :state="loadMoreState" @reload="loadmore" />
     <wd-status-tip v-else-if="total == 0" image="search" tip="当前搜索无结果" />
     <wd-message-box />
 
@@ -128,19 +128,19 @@
 <script lang="ts" setup>
 import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
 import { FormRules } from "wot-design-uni/components/wd-form/types";
-import { useMessage, dayjs } from "wot-design-uni";
+import { useMessage } from "wot-design-uni";
 
 import UserAPI, { type UserPageQuery, UserPageVO, UserForm } from "@/api/system/user";
 import RoleAPI from "@/api/system/role";
 import DeptAPI from "@/api/system/dept";
 
-import CuPicker from "@/components/CuPicker.vue";
+import CuPicker from "@/components/cu-picker/index.vue";
+import CuDateQuery from "@/components/cu-date-query/index.vue";
 
 const message = useMessage();
-
-const loading = ref(false);
-const state = ref<LoadMoreState>("loading");
-const dataList = ref<UserPageVO[]>([]);
+const loadMoreState = ref<LoadMoreState>("loading");
+const filterDropMenu = ref();
+const userFormRef = ref();
 
 const sortValue = ref(0);
 const sortOptions = ref<Record<string, any>[]>([
@@ -154,11 +154,9 @@ const queryParams: UserPageQuery = {
   pageSize: 10,
 };
 
-const createTimeRange = ref<any[]>([null, null]);
-
-const filterDropMenu = ref();
-
 const total = ref(0);
+const pageData = ref<UserPageVO[]>([]);
+
 const dialog = reactive({
   visible: false,
 });
@@ -176,10 +174,8 @@ const initialFormData: UserForm = {
 
 const formData = reactive<UserForm>({ ...initialFormData });
 
-const userFormRef = ref();
 const roleOptions = ref<Record<string, any>[]>([]);
 const deptOptions = ref<OptionType[]>([]);
-
 const rules: FormRules = {
   username: [{ required: true, message: "请输入用户名" }],
   nickname: [{ required: true, message: "请输入昵称" }],
@@ -243,21 +239,6 @@ const handleSortChange = ({ value }: { value: number }) => {
 const handleQuery = () => {
   filterDropMenu.value?.close();
   queryParams.pageNum = 1;
-
-  // 格式化时间范围
-  const startDate = createTimeRange.value[0]
-    ? dayjs(createTimeRange.value[0]).format("YYYY-MM-DD")
-    : "";
-  const endDate = createTimeRange.value[1]
-    ? dayjs(createTimeRange.value[1]).format("YYYY-MM-DD")
-    : "";
-
-  queryParams.createTime = [startDate, endDate];
-
-  // #ifdef MP-WEIXIN
-  queryParams.createTime = `${startDate},${endDate}`;
-  // #endif
-
   loadmore();
 };
 
@@ -265,27 +246,27 @@ const handleQuery = () => {
  * 重置查询
  */
 const hendleResetQuery = () => {
-  filterDropMenu.value?.close();
-  queryParams.pageNum = 1;
-  queryParams.keywords = "";
-  queryParams.createTime = "";
-  createTimeRange.value = ["", ""];
-  loadmore();
+  queryParams.keywords = undefined;
+  queryParams.createTime = undefined;
+  handleQuery();
 };
 
 /**
  * 加载更多
  */
 function loadmore() {
-  state.value = "loading";
+  loadMoreState.value = "loading";
   UserAPI.getPage(queryParams)
     .then((data) => {
-      dataList.value = data.list;
+      pageData.value = data.list;
       total.value = data.total;
       queryParams.pageNum++;
     })
+    .catch((e) => {
+      pageData.value = [];
+    })
     .finally(() => {
-      state.value = "finished";
+      loadMoreState.value = "finished";
     });
 }
 
@@ -293,20 +274,13 @@ function loadmore() {
  * 打开弹窗
  */
 async function handleOpenDialog(id?: number) {
-  loading.value = true;
   dialog.visible = true;
   roleOptions.value = await RoleAPI.getOptions();
   deptOptions.value = await DeptAPI.getOptions();
   if (id) {
-    UserAPI.getFormData(id)
-      .then((data) => {
-        Object.assign(formData, { ...data });
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-  } else {
-    loading.value = false;
+    UserAPI.getFormData(id).then((data) => {
+      Object.assign(formData, { ...data });
+    });
   }
 }
 
@@ -378,7 +352,7 @@ onReachBottom(() => {
   if (queryParams.pageNum * queryParams.pageSize < total.value) {
     loadmore();
   } else if (queryParams.pageNum * queryParams.pageSize >= total.value) {
-    state.value = "finished";
+    loadMoreState.value = "finished";
   }
 });
 
