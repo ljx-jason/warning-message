@@ -67,6 +67,18 @@
       "style": {
         "navigationBarTitleText": "通知详情"
       }
+    },
+    {
+      "path": "pages/work/role/index",
+      "style": {
+        "navigationBarTitleText": "角色管理"
+      }
+    },
+    {
+      "path": "pages/work/role/assign-perm",
+      "style": {
+        "navigationBarTitleText": "角色分配权限"
+      }
     }
   ],
   "globalStyle": {
