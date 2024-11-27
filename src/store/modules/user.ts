@@ -21,6 +21,22 @@ export const useUserStore = defineStore("user", () => {
     });
   };
 
+  // 微信登录
+  const loginByWechat = (code: string) => {
+    return new Promise((resolve, reject) => {
+      AuthAPI.wxlogin(code)
+        .then((data) => {
+          setToken(data.accessToken);
+          resolve(data);
+        })
+        .catch((error) => {
+          console.error("微信登录失败", error);
+          reject(error);
+        });
+    });
+    // return AuthAPI.wxlogin(code);
+  };
+
   // 获取用户信息
   const getInfo = () => {
     return new Promise((resolve, reject) => {
@@ -52,6 +68,7 @@ export const useUserStore = defineStore("user", () => {
   return {
     userInfo,
     login,
+    loginByWechat,
     logout,
     getInfo,
   };
