@@ -26,7 +26,7 @@
             <cu-date-query v-model="queryParams.createTime" label="创建时间" />
 
             <view class="flex-between py-2">
-              <wd-button class="w-20%" type="info" @click="hendleResetQuery">重置</wd-button>
+              <wd-button class="w-20%" type="info" @click="handleResetQuery">重置</wd-button>
               <wd-button class="w-70%" @click="handleQuery">查询</wd-button>
             </view>
           </view>
@@ -149,7 +149,7 @@ const sortOptions = ref<Record<string, any>[]>([
   { label: "最近更新", value: 2 },
 ]);
 
-const queryParams: UserPageQuery = {
+let queryParams: UserPageQuery = {
   pageNum: 1,
   pageSize: 10,
 };
@@ -245,9 +245,11 @@ const handleQuery = () => {
 /**
  * 重置查询
  */
-const hendleResetQuery = () => {
-  queryParams.keywords = undefined;
-  queryParams.createTime = undefined;
+const handleResetQuery = () => {
+  queryParams = {
+    pageNum: 1,
+    pageSize: 10,
+  };
   handleQuery();
 };
 
