@@ -11,7 +11,7 @@
             placeholder="请输入关键字"
           />
           <view class="flex-between py-2">
-            <wd-button class="w-20%" type="info" @click="hendleResetQuery">重置</wd-button>
+            <wd-button class="w-20%" type="info" @click="handleResetQuery">重置</wd-button>
             <wd-button class="w-70%" @click="handleQuery">确定</wd-button>
           </view>
         </view>
@@ -126,7 +126,7 @@ function handleQuery() {
 /**
  * 重置查询
  */
-const hendleResetQuery = () => {
+const handleResetQuery = () => {
   filterDropMenu.value?.close();
   queryParams.keywords = "";
   queryParams.pageNum = 1;
