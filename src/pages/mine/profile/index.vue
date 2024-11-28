@@ -1,5 +1,5 @@
 <template>
-  <view>
+  <view class="profile">
     <view v-if="userProfile" class="profile-card">
       <wd-cell-group border>
         <wd-cell class="avatar-cell" title="头像" center is-link>
@@ -71,7 +71,7 @@
         v-if="dialog.type === DialogType.ACCOUNT"
         ref="userProfileFormRef"
         :model="userProfileForm"
-        class="edit-form"
+        custom-class="edit-form"
       >
         <wd-cell-group border>
           <wd-input
@@ -97,7 +97,7 @@
         v-if="dialog.type === DialogType.PASSWORD"
         ref="passwordChangeFormRef"
         :model="passwordChangeForm"
-        class="edit-form"
+        custom-class="edit-form"
       >
         <wd-cell-group border>
           <wd-input
@@ -139,7 +139,7 @@
         v-if="dialog.type === DialogType.MOBILE"
         ref="mobileBindingFormRef"
         :model="mobileBindingForm"
-        class="edit-form"
+        custom-class="edit-form"
       >
         <wd-cell-group border>
           <wd-input
@@ -179,7 +179,7 @@
         v-if="dialog.type === DialogType.EMAIL"
         ref="emailBindingFormRef"
         :model="emailBindingForm"
-        class="edit-form"
+        custom-class="edit-form"
       >
         <wd-cell-group border>
           <wd-input
@@ -458,49 +458,51 @@ function touchmoveListener(event) {
 }
 </script>
 <style lang="scss" scoped>
-.profile-card {
-  padding: 10rpx;
-  margin-bottom: 24rpx;
-  line-height: 1.1;
-  background-color: rgb(255, 255, 255);
-  border-radius: 16px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.05);
+.profile {
+  .profile-card {
+    padding: 10rpx;
+    margin-bottom: 24rpx;
+    line-height: 1.1;
+    background-color: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.05);
 
-  .avatar-cell {
-    :deep(.wd-cell__body) {
-      align-items: center;
-    }
-    .avatar {
-      display: flex;
-      align-items: center;
-      justify-content: right;
-      .img {
-        position: relative;
-        width: 80px;
-        height: 80px;
-        background-color: rgba(0, 0, 0, 0.04);
-        border-radius: 50%;
-        .img-icon {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          font-size: 60px;
-          color: #fff;
-          -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
+    .avatar-cell {
+      :deep(.wd-cell__body) {
+        align-items: center;
+      }
+      .avatar {
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        .img {
+          position: relative;
+          width: 80px;
+          height: 80px;
+          background-color: rgba(0, 0, 0, 0.04);
+          border-radius: 50%;
+          .img-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 60px;
+            color: #fff;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+          }
         }
       }
     }
   }
-}
-.edit-form {
-  padding-top: 40rpx;
-  .ef-radio-group {
-    line-height: 1;
-    text-align: left;
-  }
-  .footer {
-    padding: 24rpx;
+  .edit-form {
+    padding-top: 40rpx;
+    .ef-radio-group {
+      line-height: 1;
+      text-align: left;
+    }
+    .footer {
+      padding: 24rpx;
+    }
   }
 }
 </style>

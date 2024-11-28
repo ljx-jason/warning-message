@@ -26,8 +26,10 @@
             <cu-date-query v-model="queryParams.createTime" label="创建时间" />
 
             <view class="flex-between py-2">
-              <wd-button class="w-20%" type="info" @click="handleResetQuery">重置</wd-button>
-              <wd-button class="w-70%" @click="handleQuery">查询</wd-button>
+              <wd-button custom-class="w-20per" type="info" @click="handleResetQuery">
+                重置
+              </wd-button>
+              <wd-button custom-class="w-70per" @click="handleQuery">查询</wd-button>
             </view>
           </view>
         </wd-drop-menu-item>
@@ -375,6 +377,12 @@ onLoad(() => {
   :deep(.wd-fab__trigger) {
     width: 80rpx !important;
     height: 80rpx !important;
+  }
+  :deep(.w-20per) {
+    width: 20%;
+  }
+  :deep(.w-70per) {
+    width: 70%;
   }
 }
 </style>

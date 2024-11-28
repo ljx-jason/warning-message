@@ -1,5 +1,5 @@
 <template>
-  <view>
+  <view class="role">
     <!-- 筛选 -->
     <wd-drop-menu>
       <wd-drop-menu-item ref="filterDropMenu" icon="filter" icon-size="18px" title="筛选">
@@ -11,8 +11,8 @@
             placeholder="请输入关键字"
           />
           <view class="flex-between py-2">
-            <wd-button class="w-20%" type="info" @click="handleResetQuery">重置</wd-button>
-            <wd-button class="w-70%" @click="handleQuery">确定</wd-button>
+            <wd-button custom-class="w-20per" type="info" @click="handleResetQuery">重置</wd-button>
+            <wd-button custom-class="w-70per" @click="handleQuery">确定</wd-button>
           </view>
         </view>
       </wd-drop-menu-item>
@@ -65,7 +65,7 @@
       @click="handleOpenDialog(null)"
     />
 
-    <wd-popup v-model="dialog.visible" position="bottom" class="yl-popup">
+    <wd-popup v-model="dialog.visible" position="bottom" custom-class="yl-popup">
       <wd-form ref="roleFormRef" :model="formData" :rules="rules">
         <wd-cell-group border>
           <wd-input v-model="formData.name" label="角色名称" prop="name" />
@@ -290,30 +290,44 @@ onLoad(() => {
 </script>
 
 <style lang="scss" scoped>
-:deep(.wd-drop-menu .wd-drop-menu__item) {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 50rpx;
-}
-.list-container {
-  .role-card {
-    margin-top: 20rpx;
-    :deep(.wd-cell__wrapper) {
-      padding: 4rpx 0;
-    }
-    :deep(.wd-cell) {
-      padding-right: 10rpx;
-      background: #f8f8f8;
+.role {
+  :deep(.wd-drop-menu .wd-drop-menu__item) {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 50rpx;
+  }
+  .list-container {
+    .role-card {
+      margin-top: 20rpx;
+      :deep(.wd-cell__wrapper) {
+        padding: 4rpx 0;
+      }
+      :deep(.wd-cell) {
+        padding-right: 10rpx;
+        background: #f8f8f8;
+      }
     }
   }
-}
-:deep(.wd-fab__trigger) {
-  width: 80rpx !important;
-  height: 80rpx !important;
-}
-.yl-popup {
-  .footer {
-    margin: 30rpx 0;
+  :deep(.wd-fab__trigger) {
+    width: 80rpx !important;
+    height: 80rpx !important;
+  }
+  .yl-popup {
+    .footer {
+      margin: 30rpx 0;
+    }
+  }
+  /**
+   * wot组件直接写class，在小程序上无效
+   * wot组件提供的custom-class属性也不能写unocss的写法
+   * 故wot组件只能使用custom-class属性并在vue文件中自己写样式
+   * 并且custom-class的类名需要使用:deep包裹，否则在小程序上也没有效果
+   */
+  :deep(.w-20per) {
+    width: 20%;
+  }
+  :deep(.w-70per) {
+    width: 70%;
   }
 }
 </style>
