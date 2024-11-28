@@ -97,6 +97,16 @@ const handleWechatLogin = async () => {
         title: "登录成功",
         icon: "success",
       });
+
+      const pages = getCurrentPages();
+
+      if (pages.length > 1) {
+        uni.navigateBack();
+      } else {
+        uni.reLaunch({
+          url: "/pages/index/index",
+        });
+      }
     }
   } catch (error: any) {
     console.error("微信登录失败", error);
