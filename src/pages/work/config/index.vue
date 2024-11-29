@@ -59,7 +59,9 @@
           </wd-row>
 
           <template #footer>
-            <wd-button size="small" type="primary" @click="handleAction(item)">···</wd-button>
+            <wd-button size="small" plain type="primary" @click="handleAction(item)">
+              操作
+            </wd-button>
           </template>
         </wd-card>
       </view>
