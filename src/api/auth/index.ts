@@ -26,9 +26,9 @@ const AuthAPI = {
    * @param code 微信登录code
    * @returns 返回 token
    */
-  wxlogin(code: string): Promise<LoginResult> {
+  wechatLogin(code: string): Promise<LoginResult> {
     return request<LoginResult>({
-      url: "/api/v1/auth/wxlogin",
+      url: "/api/v1/auth/wechat-login",
       method: "POST",
       data: { code },
       header: {
