@@ -1,6 +1,6 @@
 <template>
+  <view style="width: 100%; height: var(--status-bar-height)" />
   <view class="home">
-    <view style="width: 100%; height: var(--status-bar-height)" />
     <wd-swiper
       v-model:current="current"
       :list="swiperList"
@@ -136,13 +136,7 @@ const chartData = ref({});
 // 日期范围
 const recentDaysRange = ref(7);
 
-const swiperList = ref([
-  "https://registry.npmmirror.com/wot-design-uni-assets/1.0.4/files/redpanda.jpg",
-  "https://registry.npmmirror.com/wot-design-uni-assets/1.0.4/files/capybara.jpg",
-  "https://registry.npmmirror.com/wot-design-uni-assets/1.0.4/files/panda.jpg",
-  "https://registry.npmmirror.com/wot-design-uni-assets/1.0.4/files/moon.jpg",
-  "https://registry.npmmirror.com/wot-design-uni-assets/1.0.4/files/meng.jpg",
-]);
+const swiperList = ref(["https://oss.youlai.tech/blog/banner3.png"]);
 
 // 快捷导航列表
 const navList = reactive([

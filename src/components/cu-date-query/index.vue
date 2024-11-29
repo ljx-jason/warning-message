@@ -35,6 +35,19 @@ watch(
   (val) => {
     if (Array.isArray(val) && val.length === 2 && val[0] && val[1]) {
       dateRange.value = val.map((item) => new Date(item).getTime());
+    } else if (typeof val === "string" && val.includes(",")) {
+      const [startDate, endDate] = val.split(",");
+
+      if (
+        startDate &&
+        endDate &&
+        !isNaN(new Date(startDate).getTime()) &&
+        !isNaN(new Date(endDate).getTime())
+      ) {
+        dateRange.value = [new Date(startDate).getTime(), new Date(endDate).getTime()];
+      } else {
+        dateRange.value = null;
+      }
     } else {
       dateRange.value = null;
     }

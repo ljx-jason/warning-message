@@ -1,6 +1,6 @@
 <template>
   <view class="work">
-    <template v-for="item in gridList">
+    <template v-for="(item, index) in gridList" :key="index">
       <wd-card :title="item.title">
         <wd-grid clickable :column="4">
           <wd-grid-item

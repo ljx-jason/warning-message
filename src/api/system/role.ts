@@ -108,7 +108,7 @@ export interface RolePageVO {
   /** 角色编码 */
   code?: string;
   /** 角色ID */
-  id?: number;
+  id: number;
   /** 角色名称 */
   name?: string;
   /** 排序 */
@@ -132,7 +132,7 @@ export interface RoleForm {
   /** 角色名称 */
   name?: string;
   /** 排序 */
-  sort?: number;
+  sort: number;
   /** 角色状态(1-正常；0-停用) */
   status?: number;
 }

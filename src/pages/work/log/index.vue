@@ -22,7 +22,7 @@
     </wd-drop-menu>
 
     <!-- 卡片列表 -->
-    <wd-card v-for="(item, index) in pageData" class="card-list">
+    <wd-card v-for="(item, index) in pageData" :key="item.id" class="card-list">
       <template #title>
         {{ item.operator }}
       </template>
@@ -70,6 +70,7 @@
   </view>
 </template>
 <script lang="ts" setup>
+import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
 import { DropMenuItemExpose } from "wot-design-uni/components/wd-drop-menu-item/types";
 

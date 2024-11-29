@@ -37,7 +37,7 @@
     </view>
 
     <!-- 用户卡片 -->
-    <wd-card v-for="item in pageData">
+    <wd-card v-for="item in pageData" :key="item.id">
       <template #title>
         <view class="flex-between">
           <view class="flex-center">
@@ -128,6 +128,8 @@
 </template>
 
 <script lang="ts" setup>
+import { onLoad, onReachBottom } from "@dcloudio/uni-app";
+
 import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
 import { FormRules } from "wot-design-uni/components/wd-form/types";
 import { useMessage } from "wot-design-uni";
@@ -242,6 +244,7 @@ const handleQuery = () => {
   filterDropMenu.value?.close();
   queryParams.pageNum = 1;
   loadmore();
+  console.log("queryParams", queryParams);
 };
 
 /**

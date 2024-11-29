@@ -19,7 +19,7 @@
     </wd-drop-menu>
     <!-- 卡片列表 -->
     <view class="list-container">
-      <wd-card v-for="item in dataList" class="role-card">
+      <wd-card v-for="item in dataList" :key="item.id" class="role-card">
         <template #title>
           <view class="flex-between">
             <view class="flex-center">
@@ -62,7 +62,7 @@
       position="left-bottom"
       :expandable="false"
       customStyle="width: 1rem; height: 1rem; line-height: 1rem;z-index:9"
-      @click="handleOpenDialog(null)"
+      @click="handleOpenDialog()"
     />
 
     <wd-popup v-model="dialog.visible" position="bottom" custom-class="yl-popup">
@@ -109,7 +109,6 @@ const total = ref(0);
 const queryParams = reactive<RolePageQuery>({
   pageNum: 1,
   pageSize: 10,
-  keywords: "",
 });
 
 /**
