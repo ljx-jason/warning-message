@@ -36,24 +36,24 @@
       <!-- 菜单列表 -->
       <view class="mt50rpx">
         <wd-cell-group border>
-          <wd-cell title="常见问题" icon="setting" @click="goToFAQ">
+          <wd-cell title="常见问题" icon="help-circle" @click="goToFAQ">
             <wd-icon name="arrow-right" />
           </wd-cell>
-          <wd-cell title="关于我们" icon="setting" clickable @click="goToAbout">
+          <wd-cell title="关于我们" icon="warning" clickable @click="goToAbout">
             <wd-icon name="arrow-right" />
           </wd-cell>
-          <wd-cell title="用户协议" icon="setting" clickable @click="goToUserAgreement">
+          <wd-cell title="用户协议" icon="user" clickable @click="goToUserAgreement">
             <wd-icon name="arrow-right" />
           </wd-cell>
-          <wd-cell title="隐私政策" icon="setting" clickable @click="goToPrivacy">
+          <wd-cell title="隐私政策" icon="folder" clickable @click="goToPrivacy">
             <wd-icon name="arrow-right" />
           </wd-cell>
-          <wd-cell title="网络检测" icon="setting" clickable @click="goToNetworkTest">
+          <wd-cell title="网络检测" icon="wifi" clickable @click="goToNetworkTest">
             <wd-icon name="arrow-right" />
           </wd-cell>
           <wd-cell
             title="清除缓存"
-            icon="setting"
+            icon="delete"
             :value="cacheSize"
             clickable
             @click="handleClearCache"
@@ -61,7 +61,7 @@
           <wd-cell title="应用设置" icon="setting" clickable @click="goToSettings">
             <wd-icon name="arrow-right" />
           </wd-cell>
-          <wd-cell title="退出登录" icon="setting" clickable @click="handleLogout">
+          <wd-cell title="退出登录" icon="logout" clickable @click="handleLogout">
             <wd-icon name="arrow-right" />
           </wd-cell>
         </wd-cell-group>

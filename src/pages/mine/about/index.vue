@@ -4,7 +4,7 @@
     <view class="logo-section">
       <image class="logo" src="/static/images/youlaiorg.png" mode="aspectFit" />
       <text class="app-name">vue-uniapp-template</text>
-      <text class="version">版本 1.0.0</text>
+      <text class="version">版本 {{ version }}</text>
     </view>
 
     <!-- 公司信息区域 -->
@@ -21,15 +21,6 @@
       </view>
       <view class="info-item">
         <view class="item-content">
-          <text class="item-label">vue-uniapp-template</text>
-          <text class="item-desc">
-            基于 uni-app + Vue 3 + TypeScript 的项目，集成了 ESLint、Prettier、Stylelint、Husky 和
-            Commitlint 等工具，确保代码规范与质量。
-          </text>
-        </view>
-      </view>
-      <view class="info-item">
-        <view class="item-content">
           <text class="item-label">vue3-element-admin</text>
           <text class="item-desc">
             基于 Vue3 + Vite5+ TypeScript5 + Element-Plus + Pinia
@@ -37,7 +28,15 @@
           </text>
         </view>
       </view>
-
+      <view class="info-item">
+        <view class="item-content">
+          <text class="item-label">vue-uniapp-template</text>
+          <text class="item-desc">
+            基于 uni-app + Vue 3 + TypeScript 的项目，集成了 ESLint、Prettier、Stylelint、Husky 和
+            Commitlint 等工具，确保代码规范与质量。
+          </text>
+        </view>
+      </view>
       <view class="info-item">
         <view class="item-content">
           <text class="item-label">youlai-boot</text>
@@ -57,15 +56,16 @@
   </view>
 </template>
 
-<script>
-export default {
-  name: "About",
-  methods: {
-    getYear() {
-      return new Date().getFullYear();
-    },
-  },
+<script lang="ts" setup>
+const version = ref("1.0.0");
+const getYear = () => {
+  return new Date().getFullYear();
 };
+onMounted(() => {
+  // #ifdef MP-WEIXIN
+  version.value = uni.getSystemInfoSync().appVersion;
+  // #endif
+});
 </script>
 
 <style lang="scss" scoped>
