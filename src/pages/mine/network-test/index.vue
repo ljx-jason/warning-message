@@ -47,6 +47,8 @@
 </template>
 
 <script lang="ts" setup>
+import request from "@/utils/request";
+
 interface PingResult {
   delay: string | number;
   status: string;
@@ -140,10 +142,18 @@ const startTest = async () => {
 
   try {
     const startTime = Date.now();
-    await uni.request({
+    // #ifdef H5
+    const res = await uni.request({
       url: "/api/v1/auth/captcha",
       timeout: 5000,
     });
+    // #endif
+    // #ifndef H5
+    const resOther = await request({
+      url: "/api/v1/auth/captcha",
+      timeout: 5000,
+    });
+    // #endif
     const endTime = Date.now();
     const delay = endTime - startTime;
 

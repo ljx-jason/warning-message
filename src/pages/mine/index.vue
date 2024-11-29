@@ -42,6 +42,9 @@
           <wd-cell title="关于我们" icon="setting" clickable @click="goToAbout">
             <wd-icon name="arrow-right" />
           </wd-cell>
+          <wd-cell title="用户协议" icon="setting" clickable @click="goToUserAgreement">
+            <wd-icon name="arrow-right" />
+          </wd-cell>
           <wd-cell title="隐私政策" icon="setting" clickable @click="goToPrivacy">
             <wd-icon name="arrow-right" />
           </wd-cell>
@@ -78,32 +81,40 @@
 import { useUserStore } from "@/store/modules/user";
 
 const userStore = useUserStore();
-
 const userInfo = computed(() => userStore.userInfo);
-
 const isLogin = computed(() => !!userInfo.value);
-
 const defaultAvatar = "/static/images/default-avatar.png";
 
+// 登录
 const goToLoginPage = () => {
   uni.navigateTo({ url: "/pages/login/index" });
 };
-
+// 个人信息
 const goToProfile = () => {
   uni.navigateTo({ url: "/pages/mine/profile/index" });
 };
+
+// 用户协议
+const goToUserAgreement = () => {
+  uni.navigateTo({ url: "/pages/mine/user-agreement/index" });
+};
+// 隐私政策
 const goToPrivacy = () => {
   uni.navigateTo({ url: "/pages/mine/privacy/index" });
 };
+// 网络测试
 const goToNetworkTest = () => {
   uni.navigateTo({ url: "/pages/mine/network-test/index" });
 };
+// 常见问题
 const goToFAQ = () => {
   uni.navigateTo({ url: "/pages/faq/index" });
 };
+// 关于我们
 const goToAbout = () => {
   uni.navigateTo({ url: "/pages/mine/about/index" });
 };
+// 应用设置
 const goToSettings = () => {
   uni.showToast({
     title: "建设中...",
@@ -111,6 +122,7 @@ const goToSettings = () => {
   });
   //uni.navigateTo({ url: "/pages/settings/index" });
 };
+// 退出登录
 const handleLogout = () => {
   userStore.logout().then(() => {
     uni.showToast({ title: "已退出登录", icon: "success" });

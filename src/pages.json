@@ -33,6 +33,12 @@
       }
     },
     {
+      "path": "pages/mine/user-agreement/index",
+      "style": {
+        "navigationBarTitleText": "用户协议"
+      }
+    },
+    {
       "path": "pages/mine/privacy/index",
       "style": {
         "navigationBarTitleText": "隐私政策"

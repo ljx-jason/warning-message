@@ -29,6 +29,12 @@
         </view>
       </wd-form>
     </view>
+    <view class="agreement-text">
+      登录即同意
+      <text class="link" clickable @click="goToUserAgreement">《用户协议》</text>
+      和
+      <text class="link" clickable @click="goToPrivacy">《隐私政策》</text>
+    </view>
   </view>
 </template>
 
@@ -72,6 +78,16 @@ const handleLogin = () => {
     }
   });
 };
+const goToUserAgreement = () => {
+  uni.navigateTo({
+    url: "/pages/mine/user-agreement/index",
+  });
+};
+const goToPrivacy = () => {
+  uni.navigateTo({
+    url: "/pages/mine/privacy/index",
+  });
+};
 </script>
 
 <style lang="scss" scoped>
@@ -81,5 +97,19 @@ const handleLogin = () => {
   align-items: center;
   justify-content: center;
   height: calc(100vh - 50px);
+}
+.agreement-text {
+  position: fixed;
+  bottom: 30px;
+  width: 100%;
+  margin-top: 20px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+
+  .link {
+    color: #2979ff;
+    cursor: pointer;
+  }
 }
 </style>
