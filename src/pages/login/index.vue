@@ -28,6 +28,12 @@
           <wd-button size="large" type="primary" block @click="handleLogin">提交</wd-button>
         </view>
       </wd-form>
+      <div class="flex justify-center mt-[100rpx]">
+        <div class="flex flex-col items-center" @click="handleWechatLogin">
+          <img src="/static/icons/icon_wx.png" class="w-[100rpx] h-[100rpx]" />
+          <span class="mt-2">微信登录</span>
+        </div>
+      </div>
     </view>
     <view class="agreement-text">
       <view class="agreement-links">
@@ -71,6 +77,7 @@ const handleLogin = () => {
     }
   });
 };
+
 const navigateToUserAgreement = () => {
   uni.navigateTo({
     url: "/pages/mine/user-agreement/index",
@@ -80,6 +87,45 @@ const navigateToPrivacy = () => {
   uni.navigateTo({
     url: "/pages/mine/privacy/index",
   });
+};
+
+// 微信登录处理
+const handleWechatLogin = async () => {
+  try {
+    // 获取微信登录的临时 code
+    const { code } = await uni.login({
+      provider: "weixin",
+    });
+
+    // 调用后端接口进行登录认证
+    const result = await userStore.loginByWechat(code);
+
+    if (result) {
+      // 获取用户信息
+      await userStore.getInfo();
+
+      uni.showToast({
+        title: "登录成功",
+        icon: "success",
+      });
+
+      const pages = getCurrentPages();
+
+      if (pages.length > 1) {
+        uni.navigateBack();
+      } else {
+        uni.reLaunch({
+          url: "/pages/index/index",
+        });
+      }
+    }
+  } catch (error: any) {
+    console.error("微信登录失败", error);
+    uni.showToast({
+      title: error.message || "微信登录失败",
+      icon: "none",
+    });
+  }
 };
 </script>
 

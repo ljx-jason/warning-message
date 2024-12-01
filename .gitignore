@@ -22,3 +22,5 @@ dist
 *.sw?
 
 launch.json
+.hbuilderx
+pnpm-lock.yaml
