@@ -27,15 +27,19 @@
 
     <!-- 通知公告 -->
     <wd-notice-bar
-      custom-style="margin-top:10rpx"
-      text="这是一条消息提示信息，这是一条消息提示信息，这是一条消息提示信息"
-      prefix="check-outline"
+      text="vue-uniapp-template 是一个基于 Vue3 + UniApp 的前端模板项目，提供了一套完整的前端解决方案，包括登录、权限、字典、接口请求、状态管理、页面布局、组件封装等功能。"
       color="#34D19D"
-      background-color="#f0f9eb"
-    />
+      type="info"
+    >
+      <template #prefix>
+        <wd-tag color="#FAA21E" bg-color="#FAA21E" plain custom-style="margin-right:10rpx">
+          通知公告
+        </wd-tag>
+      </template>
+    </wd-notice-bar>
 
     <!-- 数据统计 -->
-    <wd-grid :column="2" custom-style="margin-top:10rpx" :gutter="2">
+    <wd-grid :column="2" :gutter="2">
       <wd-grid-item
         v-for="(item, index) in visitStatsData"
         :key="index"

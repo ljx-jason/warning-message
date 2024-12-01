@@ -17,6 +17,10 @@ export default {
       "flex-end": "flex justify-end items-center",
       "flex-col-center": "flex flex-col justify-center items-center",
       "flex-between": "flex justify-between items-center",
+      "fixed-bottom": "fixed bottom-0 left-0 right-0",
+      "absolute-center": "absolute inset-0 flex justify-center items-center",
+      "text-small-light": "text-xs font-light text-gray-500",
+      "text-medium-light": "text-sm font-light text-gray-500",
     },
   ],
 

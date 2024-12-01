@@ -19,7 +19,7 @@
           <!-- 未登录 -->
           <view v-else @click="navigateToLoginPage">
             <view class="login-tip">您还未登录，请先登录</view>
-            <view class="w180rpx mt-2">
+            <view class="w120rpx mt-2">
               <button class="login-btn" @click="navigateToLoginPage">登录</button>
             </view>
           </view>
@@ -112,9 +112,9 @@ const handleItemclick = (item: any) => {
       color: #fff;
     }
     .login-btn {
-      line-height: 60rpx;
+      font-size: 28rpx;
+      line-height: 50rpx;
       color: #4d80f0;
-      background-color: #fff;
       border-radius: 10rpx;
     }
   }

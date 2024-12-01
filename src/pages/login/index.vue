@@ -1,7 +1,11 @@
 <template>
-  <view class="login">
-    <image class="logo" src="@/static/logo.png" style="width: 100px; height: 100px" />
-    <view class="mt-10 flex-center">
+  <view class="login-container">
+    <view class="login-header">
+      <image src="/static/images/youlaiorg.png" class="w160rpx h160rpx" />
+      <view class="text-small-light">有来开源，致力于快速构建和高效开发的应用解决方案。</view>
+    </view>
+
+    <view class="login-form">
       <wd-form ref="loginFormRef" :model="loginFormData">
         <wd-cell-group border>
           <wd-input
@@ -24,23 +28,23 @@
             :rules="[{ required: true, message: '请填写密码' }]"
           />
         </wd-cell-group>
-        <view class="footer">
-          <wd-button size="large" type="primary" block @click="handleLogin">提交</wd-button>
+        <view class="mt-80rpx">
+          <wd-button size="large" type="primary" block @click="handleLogin">登录</wd-button>
         </view>
       </wd-form>
-      <div class="flex justify-center mt-[100rpx]">
-        <div class="flex flex-col items-center" @click="handleWechatLogin">
-          <img src="/static/icons/icon_wx.png" class="w-[100rpx] h-[100rpx]" />
-          <span class="mt-2">微信登录</span>
-        </div>
-      </div>
     </view>
-    <view class="agreement-text">
-      <view class="agreement-links">
-        <text class="normal-text">登录即同意</text>
-        <text class="link" @click="navigateToUserAgreement">《用户协议》</text>
-        <text class="normal-text">和</text>
-        <text class="link" @click="navigateToPrivacy">《隐私政策》</text>
+
+    <view class="login-footer">
+      <view class="text-center">
+        <wd-divider>
+          <img src="/static/icons/icon_wx.png" class="w-[100rpx] h-[100rpx]" />
+        </wd-divider>
+      </view>
+      <view class="text-center mt-20rpx">
+        <text class="text-medium-light">登录即同意</text>
+        <text @click="navigateToUserAgreement">《用户协议》</text>
+        <text class="text-medium-light">和</text>
+        <text @click="navigateToPrivacy">《隐私政策》</text>
       </view>
     </view>
   </view>
@@ -130,52 +134,25 @@ const handleWechatLogin = async () => {
 </script>
 
 <style lang="scss" scoped>
-.login {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - 50px);
-  .agreement-text {
-    position: fixed;
-    right: 0;
-    bottom: 30px;
-    left: 0;
+.login-container {
+  height: calc(100vh - 165rpx);
+  background: #fff;
+  .login-header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0 20px;
+    justify-content: center;
+    padding: 80rpx 0;
+  }
+  .login-form {
+    width: 80%;
+    margin: 80rpx auto;
+  }
 
-    .agreement-links {
-      margin-bottom: 8px;
-      font-size: 14px;
-      line-height: 1.5;
-
-      .normal-text {
-        color: #666;
-      }
-
-      .link {
-        padding: 0 2px;
-        color: #2979ff;
-
-        &:active {
-          opacity: 0.8;
-        }
-      }
-    }
-
-    .copyright {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      .copyright-text {
-        font-size: 12px;
-        line-height: 1.5;
-        color: #999;
-      }
-    }
+  .login-footer {
+    position: absolute;
+    bottom: 40rpx;
+    width: 100%;
   }
 }
 </style>
