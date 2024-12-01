@@ -1,5 +1,5 @@
 <template>
-  <view class="network-test">
+  <view class="network-container">
     <!-- 网络状态展示 -->
     <view class="status-card">
       <view class="status-header">
@@ -193,7 +193,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-.network-test {
+.network-container {
   min-height: 100vh;
   padding: 20px;
   background-color: #f5f5f5;

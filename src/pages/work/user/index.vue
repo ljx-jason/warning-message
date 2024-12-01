@@ -1,21 +1,26 @@
 <template>
-  <view class="user">
-    <view style="width: 100%; height: var(--status-bar-height)" />
+  <!-- 自定义导航栏的占位 -->
+  <view style="width: 100%; height: var(--status-bar-height)" />
+
+  <view class="user-container">
+    <!-- 自定义导航栏 -->
     <wd-navbar title="用户管理">
       <template #left>
         <wd-icon name="thin-arrow-left" @click="handleNavigateback()" />
       </template>
     </wd-navbar>
+
     <!-- 排序筛选 -->
-    <view class="mb-24rpx">
+    <view class="filter-container">
       <wd-drop-menu>
         <wd-drop-menu-item
           v-model="sortValue"
           :options="sortOptions"
           title="排序"
+          icon="unfold-more"
           @change="handleSortChange"
         />
-        <wd-drop-menu-item ref="filterDropMenu" title="筛选">
+        <wd-drop-menu-item ref="filterDropMenu" title="筛选" icon="filter">
           <view>
             <wd-input
               v-model="queryParams.keywords"
@@ -26,69 +31,84 @@
             <cu-date-query v-model="queryParams.createTime" label="创建时间" />
 
             <view class="flex-between py-2">
-              <wd-button custom-class="w-20per" type="info" @click="handleResetQuery">
-                重置
-              </wd-button>
-              <wd-button custom-class="w-70per" @click="handleQuery">查询</wd-button>
+              <wd-button type="info" @click="handleResetQuery">重置</wd-button>
+              <wd-button @click="handleQuery">查询</wd-button>
             </view>
           </view>
         </wd-drop-menu-item>
       </wd-drop-menu>
     </view>
 
-    <!-- 用户卡片 -->
-    <wd-card v-for="item in pageData" :key="item.id">
-      <template #title>
-        <view class="flex-between">
-          <view class="flex-center">
-            <wd-img :width="50" :height="50" round :src="item.avatar" />
-            <view class="ml-2">
-              <view class="font-bold">
-                {{ item.nickname }}
-                <wd-icon v-if="item.gender == 1" name="gender-male" class="color-#4D80F0" />
-                <wd-icon v-else-if="item.gender == 2" name="gender-female" class="color-#FA4350" />
+    <!-- 数据列表 -->
+    <view class="data-container">
+      <wd-card v-for="item in pageData" :key="item.id">
+        <template #title>
+          <view class="flex-between">
+            <view class="flex-center">
+              <wd-img :width="50" :height="50" round :src="item.avatar" />
+              <view class="ml-2">
+                <view class="font-bold">
+                  {{ item.nickname }}
+                  <wd-icon v-if="item.gender == 1" name="gender-male" class="color-#4D80F0" />
+                  <wd-icon
+                    v-else-if="item.gender == 2"
+                    name="gender-female"
+                    class="color-#FA4350"
+                  />
+                </view>
+                <view class="mt-1"><wd-text :text="item.deptName" size="12px" /></view>
               </view>
-              <view class="mt-1"><wd-text :text="item.deptName" size="12px" /></view>
+            </view>
+            <view>
+              <wd-tag v-if="item.status === 1" type="success" plain>正常</wd-tag>
+              <wd-tag v-else-if="item.status === 0" plain>禁用</wd-tag>
             </view>
           </view>
-          <view>
-            <wd-tag v-if="item.status === 1" type="success" plain>正常</wd-tag>
-            <wd-tag v-else-if="item.status === 0" plain>禁用</wd-tag>
+        </template>
+
+        <wd-cell-group>
+          <wd-cell title="用户名" :value="item.username" icon="user" />
+          <wd-cell title="角色" :value="item.roleNames" icon="usergroup" />
+          <wd-cell title="手机号码" :value="item.mobile" icon="mobile" />
+          <wd-cell title="邮箱" :value="item.email" icon="mail" />
+        </wd-cell-group>
+
+        <template #footer>
+          <view class="flex-between">
+            <view class="text-left">
+              <wd-text text="创建时间：" size="small" class="font-bold" />
+              <wd-text :text="item.createTime" size="small" />
+            </view>
+            <view class="text-right">
+              <wd-button
+                type="primary"
+                size="small"
+                plain
+                :v-has-perm="'sys:user:edit'"
+                @click="handleOpenDialog(item.id)"
+              >
+                编辑
+              </wd-button>
+              &nbsp;
+              <wd-button
+                type="error"
+                size="small"
+                plain
+                :v-has-perm="'sys:user:delete'"
+                @click="handleDelete(item.id)"
+              >
+                删除
+              </wd-button>
+            </view>
           </view>
-        </view>
-      </template>
+        </template>
+      </wd-card>
 
-      <wd-cell-group>
-        <wd-cell title="用户名" :value="item.username" icon="user" />
-        <wd-cell title="角色" :value="item.roleNames" icon="usergroup" />
-        <wd-cell title="手机号码" :value="item.mobile" icon="mobile" />
-        <wd-cell title="邮箱" :value="item.email" icon="mail" />
-      </wd-cell-group>
+      <wd-loadmore v-if="total > 0" :state="loadMoreState" @reload="loadmore" />
+      <wd-status-tip v-else-if="total == 0" image="search" tip="当前搜索无结果" />
+    </view>
 
-      <template #footer>
-        <view class="flex-between">
-          <view class="text-left">
-            <wd-text text="创建时间：" size="small" class="font-bold" />
-            <wd-text :text="item.createTime" size="small" />
-          </view>
-          <view class="text-right">
-            <wd-button type="primary" size="small" plain @click="handleOpenDialog(item.id)">
-              编辑
-            </wd-button>
-            &nbsp;
-            <wd-button type="error" size="small" plain @click="handleDelete(item.id)">
-              删除
-            </wd-button>
-          </view>
-        </view>
-      </template>
-    </wd-card>
-
-    <wd-loadmore v-if="total > 0" :state="loadMoreState" @reload="loadmore" />
-    <wd-status-tip v-else-if="total == 0" image="search" tip="当前搜索无结果" />
-    <wd-message-box />
-
-    <!-- 编辑弹窗 -->
+    <!-- 弹窗表单 -->
     <wd-popup v-model="dialog.visible" position="bottom" @close="hancleCloseDialog">
       <wd-form ref="userFormRef" :model="formData" :rules="rules">
         <wd-cell-group border>
@@ -113,17 +133,21 @@
           </wd-cell>
         </wd-cell-group>
       </wd-form>
-      <view class="footer">
+      <view class="popup-footer">
         <wd-button type="primary" block @click="handleSubmit">提交</wd-button>
       </view>
     </wd-popup>
 
+    <!-- 悬浮操作按钮 -->
     <wd-fab
+      :v-has-perm="'sys:user:add'"
       position="left-bottom"
       :expandable="false"
-      customStyle="width: 1rem; height: 1rem; line-height: 1rem;z-index:9"
+      custom-style="z-index: 9"
       @click="handleOpenDialog"
     />
+
+    <wd-message-box />
   </view>
 </template>
 
@@ -368,24 +392,38 @@ onLoad(() => {
 });
 </script>
 
+<script lang="ts">
+// https://wot-design-uni.pages.dev/guide/common-problems#%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%A0%B7%E5%BC%8F%E9%9A%94%E7%A6%BB
+export default {
+  options: {
+    styleIsolation: "shared",
+  },
+};
+</script>
+
 <style lang="scss" scoped>
-.user {
+.user-container {
   :deep(.wd-cell__wrapper) {
     padding: 4rpx 0;
   }
+
   :deep(.wd-cell) {
     padding-right: 10rpx;
     background: #f8f8f8;
   }
+
   :deep(.wd-fab__trigger) {
     width: 80rpx !important;
     height: 80rpx !important;
   }
-  :deep(.w-20per) {
-    width: 20%;
+
+  .filter-container {
+    padding: 10rpx;
+    background: #fff;
   }
-  :deep(.w-70per) {
-    width: 70%;
+
+  .data-container {
+    margin-top: 20rpx;
   }
 }
 </style>

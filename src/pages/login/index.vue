@@ -32,13 +32,9 @@
     <view class="agreement-text">
       <view class="agreement-links">
         <text class="normal-text">登录即同意</text>
-        <text class="link" @click="goToUserAgreement">《用户协议》</text>
+        <text class="link" @click="navigateToUserAgreement">《用户协议》</text>
         <text class="normal-text">和</text>
-        <text class="link" @click="goToPrivacy">《隐私政策》</text>
-      </view>
-      <view class="copyright">
-        <text class="copyright-text">Copyright © {{ getYear() }} 有来开源组织</text>
-        <text class="copyright-text">All Rights Reserved</text>
+        <text class="link" @click="navigateToPrivacy">《隐私政策》</text>
       </view>
     </view>
   </view>
@@ -75,18 +71,15 @@ const handleLogin = () => {
     }
   });
 };
-const goToUserAgreement = () => {
+const navigateToUserAgreement = () => {
   uni.navigateTo({
     url: "/pages/mine/user-agreement/index",
   });
 };
-const goToPrivacy = () => {
+const navigateToPrivacy = () => {
   uni.navigateTo({
     url: "/pages/mine/privacy/index",
   });
-};
-const getYear = () => {
-  return new Date().getFullYear();
 };
 </script>
 

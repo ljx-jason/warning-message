@@ -168,19 +168,19 @@ onReachBottom(() => {
 
 // 操作按钮
 const handleAction = (item: RolePageVO) => {
-  const actions = ["删除", "分配权限", "编辑"];
+  const actions = ["编辑", "分配权限", "删除"];
   uni.showActionSheet({
     itemList: actions,
     success: ({ tapIndex }) => {
       switch (actions[tapIndex]) {
-        case "删除":
-          handleDelete(item.id);
+        case "编辑":
+          handleOpenDialog(item.id);
           break;
         case "分配权限":
           handleAssignPerm(item.id);
           break;
-        case "编辑":
-          handleOpenDialog(item.id);
+        case "删除":
+          handleDelete(item.id);
           break;
       }
     },
@@ -288,6 +288,15 @@ onLoad(() => {
 });
 </script>
 
+<script lang="ts">
+// https://wot-design-uni.pages.dev/guide/common-problems#%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%A0%B7%E5%BC%8F%E9%9A%94%E7%A6%BB
+export default {
+  options: {
+    styleIsolation: "shared",
+  },
+};
+</script>
+
 <style lang="scss" scoped>
 .role {
   :deep(.wd-drop-menu .wd-drop-menu__item) {
@@ -307,6 +316,15 @@ onLoad(() => {
       }
     }
   }
+  :deep(.wd-cell__wrapper) {
+    padding: 4rpx 0;
+  }
+
+  :deep(.wd-cell) {
+    padding-right: 10rpx;
+    background: #f8f8f8;
+  }
+
   :deep(.wd-fab__trigger) {
     width: 80rpx !important;
     height: 80rpx !important;

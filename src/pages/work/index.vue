@@ -40,16 +40,6 @@ const gridList = reactive([
         prem: "sys:role:query",
       },
       {
-        icon: "/static/icons/dept.png",
-        title: "部门管理",
-        prem: "sys:dept:query",
-      },
-      {
-        icon: "/static/icons/dict.png",
-        title: "字典管理",
-        prem: "sys:dict:query",
-      },
-      {
         icon: "/static/icons/config.png",
         title: "系统配置",
         url: "/pages/work/config/index",
@@ -67,12 +57,8 @@ const gridList = reactive([
     title: "系统监控",
     children: [
       {
-        icon: "/static/icons/monitor.png",
-        title: "实时监控",
-      },
-      {
         icon: "/static/icons/log.png",
-        title: "日志管理",
+        title: "系统日志",
         url: "/pages/work/log/index",
         prem: "sys:log:query",
       },

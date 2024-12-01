@@ -27,7 +27,7 @@
 
     <!-- 通知公告 -->
     <wd-notice-bar
-      class="mt-2"
+      custom-style="margin-top:10rpx"
       text="这是一条消息提示信息，这是一条消息提示信息，这是一条消息提示信息"
       prefix="check-outline"
       color="#34D19D"
@@ -35,7 +35,7 @@
     />
 
     <!-- 数据统计 -->
-    <wd-grid :column="2" class="mt-2" :gutter="2">
+    <wd-grid :column="2" custom-style="margin-top:10rpx" :gutter="2">
       <wd-grid-item
         v-for="(item, index) in visitStatsData"
         :key="index"
@@ -47,7 +47,7 @@
             <image class="w-80rpx h-80rpx rounded-8rpx" :src="item.icon" />
             <view class="ml-5 text-left">
               <view class="font-bold">{{ item.title }}</view>
-              <view class="mt-1">{{ item.todayCount }}</view>
+              <view class="mt-2">{{ item.todayCount }}</view>
             </view>
           </view>
         </view>
@@ -136,7 +136,10 @@ const chartData = ref({});
 // 日期范围
 const recentDaysRange = ref(7);
 
-const swiperList = ref(["https://oss.youlai.tech/blog/banner3.png"]);
+const swiperList = ref([
+  "https://oss.youlai.tech/blog/banner9.png",
+  "https://oss.youlai.tech/blog/banner8.png",
+]);
 
 // 快捷导航列表
 const navList = reactive([
