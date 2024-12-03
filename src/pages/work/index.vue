@@ -28,7 +28,7 @@ const gridList = reactive([
     title: "系统管理",
     children: [
       {
-        icon: "/static/icons/user.png",
+        icon: "/static/icons/user1.png",
         title: "用户管理",
         url: "/pages/work/user/index",
         prem: "sys:user:query",
@@ -39,17 +39,18 @@ const gridList = reactive([
         url: "/pages/work/role/index",
         prem: "sys:role:query",
       },
-      {
-        icon: "/static/icons/setting.png",
-        title: "系统配置",
-        url: "/pages/work/config/index",
-        prem: "sys:config:query",
-      },
+
       {
         icon: "/static/icons/notice.png",
         title: "通知公告",
         url: "/pages/work/notice/index",
         prem: "sys:notice:query",
+      },
+      {
+        icon: "/static/icons/setting.png",
+        title: "系统配置",
+        url: "/pages/work/config/index",
+        prem: "sys:config:query",
       },
     ],
   },
@@ -61,10 +62,6 @@ const gridList = reactive([
         title: "系统日志",
         url: "/pages/work/log/index",
         prem: "sys:log:query",
-      },
-      {
-        icon: "/static/icons/performance.png",
-        title: "性能监控",
       },
     ],
   },

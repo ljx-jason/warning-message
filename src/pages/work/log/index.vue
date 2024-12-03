@@ -22,7 +22,7 @@
     </wd-drop-menu>
 
     <!-- 卡片列表 -->
-    <wd-card v-for="(item, index) in pageData" :key="item.id" class="card-list">
+    <wd-card v-for="item in pageData" :key="item.id" class="card-list">
       <template #title>
         {{ item.operator }}
       </template>

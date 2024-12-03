@@ -2,7 +2,7 @@
   <view class="about-container">
     <!-- 顶部 Logo 区域 -->
     <view class="logo-section">
-      <image class="logo" src="/static/images/youlaiorg.png" mode="aspectFit" />
+      <image class="logo" src="/static/images/logo.png" mode="aspectFit" />
       <text class="app-name">vue-uniapp-template</text>
       <text class="version">版本 {{ version }}</text>
     </view>

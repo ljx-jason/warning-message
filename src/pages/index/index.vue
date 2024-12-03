@@ -115,7 +115,7 @@ const visitStatsData = ref<VisitStats[] | null>([
   {
     type: "online",
     title: "在线用户数",
-    icon: "/static/icons/active-user.png",
+    icon: "/static/icons/user2.png",
     growthRate: 0,
     granularity: "-",
     todayCount: 1,
@@ -157,7 +157,7 @@ const swiperList = ref(["https://oss.youlai.tech/blog/banner9.png"]);
 // 快捷导航列表
 const navList = reactive([
   {
-    icon: "/static/icons/user.png",
+    icon: "/static/icons/user1.png",
     title: "用户管理",
     url: "/pages/work/user/index",
     prem: "sys:user:query",
