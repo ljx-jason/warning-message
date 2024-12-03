@@ -2,7 +2,7 @@
   <view class="login-container">
     <view class="login-header">
       <image src="/static/images/youlaiorg.png" class="w160rpx h160rpx" />
-      <view class="text-small-light">有来开源，致力于快速构建和高效开发的应用解决方案。</view>
+      <view class="text-sm text-white">有来开源，致力于构建高效开发的应用解决方案。</view>
     </view>
 
     <view class="login-form">
@@ -134,15 +134,23 @@ const handleWechatLogin = async () => {
 </script>
 
 <style lang="scss" scoped>
+html,
+body {
+  height: 100%;
+  margin: 0; /* 移除默认的外边距 */
+}
 .login-container {
-  height: calc(100vh - 165rpx);
+  position: relative;
+  height: 100vh;
   background: #fff;
   .login-header {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 80rpx 0;
+    padding: 160rpx 0;
+    background: url("/static/images/login-banner.png") no-repeat center center;
+    background-size: 100% 100%;
   }
   .login-form {
     width: 80%;

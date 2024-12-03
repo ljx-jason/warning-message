@@ -19,7 +19,7 @@
         :url="item.url"
       >
         <view class="p-2">
-          <image class="w-80rpx h-80rpx rounded-8rpx" :src="item.icon" />
+          <image class="w-72rpx h-72rpx rounded-8rpx" :src="item.icon" />
         </view>
         <view class="text">{{ item.title }}</view>
       </wd-grid-item>
@@ -103,7 +103,7 @@ const visitStatsData = ref<VisitStats[] | null>([
   {
     type: "online",
     title: "在线用户数",
-    icon: "/static/icons/online.png",
+    icon: "/static/icons/active-user.png",
     growthRate: 0,
     granularity: "-",
     todayCount: 1,
@@ -111,7 +111,7 @@ const visitStatsData = ref<VisitStats[] | null>([
   {
     type: "pv",
     title: "浏览量(PV)",
-    icon: "/static/icons/pv.png",
+    icon: "/static/icons/stat1.png",
     growthRate: 0,
     granularity: "日",
     todayCount: 0,
@@ -119,15 +119,15 @@ const visitStatsData = ref<VisitStats[] | null>([
   {
     type: "uv",
     title: "访客数(UV)",
-    icon: "/static/icons/visit.png",
+    icon: "/static/icons/visitor.png",
     growthRate: 0,
     granularity: "日",
     todayCount: 0,
   },
   {
     type: "ip",
-    title: "IP数",
-    icon: "/static/icons/client.png",
+    title: "访问IP数",
+    icon: "/static/icons/stat4.png",
     growthRate: 0,
     granularity: "日",
     todayCount: 0,
@@ -140,10 +140,7 @@ const chartData = ref({});
 // 日期范围
 const recentDaysRange = ref(7);
 
-const swiperList = ref([
-  "https://oss.youlai.tech/blog/banner9.png",
-  "https://oss.youlai.tech/blog/banner8.png",
-]);
+const swiperList = ref(["https://oss.youlai.tech/blog/banner9.png"]);
 
 // 快捷导航列表
 const navList = reactive([
@@ -166,7 +163,7 @@ const navList = reactive([
     prem: "sys:notice:query",
   },
   {
-    icon: "/static/icons/config.png",
+    icon: "/static/icons/setting.png",
     title: "系统配置",
     url: "/pages/work/config/index",
     prem: "sys:config:query",

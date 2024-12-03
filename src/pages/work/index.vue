@@ -12,7 +12,7 @@
             :url="child.url"
           >
             <view class="p-2">
-              <image class="w-80rpx h-80rpx rounded-8rpx" :src="child.icon" />
+              <image class="w-72rpx h-72rpx rounded-8rpx" :src="child.icon" />
             </view>
             <view class="text">{{ child.title }}</view>
           </wd-grid-item>
@@ -40,7 +40,7 @@ const gridList = reactive([
         prem: "sys:role:query",
       },
       {
-        icon: "/static/icons/config.png",
+        icon: "/static/icons/setting.png",
         title: "系统配置",
         url: "/pages/work/config/index",
         prem: "sys:config:query",
