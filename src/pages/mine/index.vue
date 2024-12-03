@@ -17,7 +17,7 @@
             <view class="text-28rpx mt2">{{ userInfo?.username }}</view>
           </view>
           <!-- 未登录 -->
-          <view v-else @click="navigateToLoginPage">
+          <view v-else>
             <view class="login-tip">您还未登录，请先登录</view>
             <view class="w120rpx mt-2">
               <button class="login-btn" @click="navigateToLoginPage">登录</button>

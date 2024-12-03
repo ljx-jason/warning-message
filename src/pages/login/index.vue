@@ -1,8 +1,8 @@
 <template>
   <view class="login-container">
     <view class="login-header">
-      <image src="/static/images/youlaiorg.png" class="w160rpx h160rpx" />
-      <view class="text-sm text-white">有来开源，致力于构建高效开发的应用解决方案。</view>
+      <image src="/static/logo.png" class="w160rpx h160rpx" />
+      <view class="text-sm text-white">有来开源，专注于构建高效开发的应用解决方案。</view>
     </view>
 
     <view class="login-form">
@@ -37,13 +37,17 @@
     <view class="login-footer">
       <view class="text-center">
         <wd-divider>
-          <img src="/static/icons/icon_wx.png" class="w-[100rpx] h-[100rpx]" />
+          <img
+            src="/static/icons/weixin.png"
+            class="w-[80rpx] h-[80rpx]"
+            @click="handleWechatLogin"
+          />
         </wd-divider>
       </view>
-      <view class="text-center mt-20rpx">
-        <text class="text-medium-light">登录即同意</text>
+      <view class="text-center mt-20rpx text-sm">
+        <text class="text-gray">登录即同意</text>
         <text @click="navigateToUserAgreement">《用户协议》</text>
-        <text class="text-medium-light">和</text>
+        <text class="text-gray">和</text>
         <text @click="navigateToPrivacy">《隐私政策》</text>
       </view>
     </view>
@@ -63,6 +67,7 @@ const loginFormData = ref<LoginFormData>({
 
 const userStore = useUserStore();
 const dictStore = useDictStore();
+
 // 登录处理
 const handleLogin = () => {
   loginFormRef.value.validate().then(async ({ valid }: { valid: boolean }) => {
@@ -72,9 +77,21 @@ const handleLogin = () => {
         await userStore.getInfo();
         await dictStore.loadDictionaries();
         uni.showToast({ title: "登录成功", icon: "success" });
-        uni.reLaunch({
-          url: "/pages/index/index",
-        });
+
+        // 检查是否有上一页
+        const pages = getCurrentPages();
+        console.log("pages", pages.length);
+        if (pages.length > 1) {
+          setTimeout(() => {
+            uni.navigateBack();
+          }, 1500);
+        } else {
+          setTimeout(() => {
+            uni.reLaunch({
+              url: "/pages/index/index",
+            });
+          }, 1500);
+        }
       } catch (error: any) {
         console.log("登录失败", error.message);
       }
@@ -134,11 +151,6 @@ const handleWechatLogin = async () => {
 </script>
 
 <style lang="scss" scoped>
-html,
-body {
-  height: 100%;
-  margin: 0; /* 移除默认的外边距 */
-}
 .login-container {
   position: relative;
   height: 100vh;
@@ -149,7 +161,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 160rpx 0;
-    background: url("/static/images/login-banner.png") no-repeat center center;
+    background: url("/static/images/login-bg.png") no-repeat center center;
     background-size: 100% 100%;
   }
   .login-form {
