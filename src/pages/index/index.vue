@@ -77,7 +77,19 @@
       </template>
 
       <view class="charts-box">
-        <qiun-data-charts type="line" :chartData="chartData" />
+        <qiun-data-charts
+          type="line"
+          :chartData="chartData"
+          :opts="{
+            xAxis: {
+              rotateLabel: true, // 启用标签旋转
+              rotateAngle: -45, // 设置旋转角度
+            },
+            yAxis: {
+              disabled: true,
+            },
+          }"
+        />
       </view>
     </wd-card>
   </view>
@@ -194,7 +206,7 @@ const loadVisitStatsData = async () => {
 const loadVisitTrendData = () => {
   const endDate = new Date();
   const startDate = new Date(endDate);
-  startDate.setDate(endDate.getDate() - recentDaysRange.value);
+  startDate.setDate(endDate.getDate() - recentDaysRange.value + 1);
 
   const visitTrendQuery = {
     startDate: dayjs(startDate).format("YYYY-MM-DD"),
@@ -234,7 +246,7 @@ onReady(() => {
 
 <style setup lang="scss">
 .home {
-  padding: 0 10rpx;
+  padding: 10rpx 10rpx;
   :deep(.custom-item) {
     height: 80px !important;
   }

@@ -27,7 +27,7 @@
       </view>
       <!-- 编辑资料 -->
       <view v-if="isLogin" class="cursor-pointer">
-        <wd-icon name="setting" />
+        <wd-icon name="setting" @click="navigateToProfile" />
       </view>
     </view>
     <!-- 功能操作 -->
@@ -46,7 +46,7 @@
         <wd-cell title="常见问题" icon="help-circle" @click="navigateToFAQ">
           <wd-icon name="arrow-right" />
         </wd-cell>
-        <wd-cell title="问题反馈" icon="check-circle" clickable @click="navigateToAbout">
+        <wd-cell title="问题反馈" icon="check-circle" clickable @click="handleQuestionFeedback">
           <wd-icon name="arrow-right" />
         </wd-cell>
         <wd-cell title="设置" icon="setting1" clickable @click="navigateToSettings">
@@ -86,11 +86,15 @@ const navigateToFAQ = () => {
 const navigateToAbout = () => {
   uni.navigateTo({ url: "/pages/mine/about/index" });
 };
-// 应用设置
+// 设置
 const navigateToSettings = () => {
   uni.navigateTo({ url: "/pages/mine/settings/index" });
 };
-
+// 问题反馈
+const handleQuestionFeedback = () => {
+  uni.navigateTo({ url: "/pages/mine/feedback/index" });
+};
+// 建设中
 const handleItemclick = (item: any) => {
   toast.show("建设中...");
 };
@@ -116,6 +120,13 @@ const handleItemclick = (item: any) => {
       line-height: 50rpx;
       color: #4d80f0;
       border-radius: 10rpx;
+    }
+    .cursor-pointer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: auto;
+      margin-right: 10rpx;
     }
   }
 }

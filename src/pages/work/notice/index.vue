@@ -22,63 +22,46 @@
     </wd-drop-menu>
 
     <!-- 列表内容 -->
-    <view v-for="(item, index) in dataList" :key="index" class="mt-20rpx">
-      <wd-card>
-        <template #title>
-          <view class="flex items-center justify-between">
-            <view class="flex-1 text-truncate">{{ item.title }}</view>
-            <wd-tag :type="getStatusType(item.publishStatus)" size="small">
-              {{ getStatusText(item.publishStatus) }}
-            </wd-tag>
-          </view>
-        </template>
-        <wd-row class="mb-20rpx">
-          <wd-col :span="24">
-            <wd-col :span="8">
-              <view>通告目标类型：</view>
-            </wd-col>
-            <wd-col :span="16">
-              <view>{{ item.targetType === 1 ? "指定" : "全体" }}</view>
-            </wd-col>
-          </wd-col>
-          <wd-col :span="24">
-            <wd-col :span="8">
-              <view>发布人：</view>
-            </wd-col>
-            <wd-col :span="16">
-              <view>{{ item.publisherName || "-" }}</view>
-            </wd-col>
-          </wd-col>
-          <wd-col v-if="item.publishStatus === 1" :span="24">
-            <wd-col :span="8">
-              <view>发布时间：</view>
-            </wd-col>
-            <wd-col :span="16">
-              <view>{{ formatDate(item.publishTime) }}</view>
-            </wd-col>
-          </wd-col>
-          <wd-col v-else :span="24">
-            <wd-col :span="8">
-              <view>撤回时间：</view>
-            </wd-col>
-            <wd-col :span="16">
-              <view>{{ formatDate(item.revokeTime) }}</view>
-            </wd-col>
-          </wd-col>
-          <wd-col :span="24">
-            <wd-col :span="8">
-              <view>紧急程度：</view>
-            </wd-col>
-            <wd-col :span="16">
-              <dict-label code="notice_level" :model-value="item.level" />
-            </wd-col>
-          </wd-col>
-        </wd-row>
+    <view class="data-container">
+      <view v-for="(item, index) in dataList" :key="index" class="mt-20rpx">
+        <wd-card>
+          <template #title>
+            <view class="flex items-center justify-between">
+              <view class="flex-1 text-truncate">{{ item.title }}</view>
+              <wd-tag :type="getStatusType(item.publishStatus)" size="small">
+                {{ getStatusText(item.publishStatus) }}
+              </wd-tag>
+            </view>
+          </template>
 
-        <template #footer>
-          <wd-button size="small" plain type="primary" @click="handleAction(item)">操作</wd-button>
-        </template>
-      </wd-card>
+          <wd-cell-group>
+            <wd-cell title="通告目标类型" :value="item.targetType === 1 ? '指定' : '全体'" />
+            <wd-cell title="紧急程度">
+              <template #default>
+                <cu-dict-label code="notice_level" :model-value="item.level" />
+              </template>
+            </wd-cell>
+            <wd-cell title="发布人" :value="item.publisherName || '-'" />
+          </wd-cell-group>
+          <template #footer>
+            <view class="flex-between">
+              <view v-if="item.publishStatus === 1" class="text-left">
+                <wd-text text="发布时间：" size="small" class="font-bold" />
+                <wd-text :text="formatDate(item.publishTime)" size="small" />
+              </view>
+              <view v-else class="text-left">
+                <wd-text text="撤回时间：" size="small" class="font-bold" />
+                <wd-text :text="formatDate(item.revokeTime)" size="small" />
+              </view>
+              <view class="text-right">
+                <wd-button size="small" plain type="primary" @click="handleAction(item)">
+                  操作
+                </wd-button>
+              </view>
+            </view>
+          </template>
+        </wd-card>
+      </view>
     </view>
 
     <!-- 加载更多 -->
@@ -288,3 +271,29 @@ onLoad(() => {
   loadMore();
 });
 </script>
+<style lang="scss" scoped>
+.data-container {
+  :deep(.wd-cell__wrapper) {
+    padding: 4rpx 0;
+  }
+
+  :deep(.wd-cell) {
+    padding-right: 10rpx;
+    background: #f8f8f8;
+  }
+
+  :deep(.wd-fab__trigger) {
+    width: 80rpx !important;
+    height: 80rpx !important;
+  }
+
+  .filter-container {
+    padding: 10rpx;
+    background: #fff;
+  }
+
+  .data-container {
+    margin-top: 20rpx;
+  }
+}
+</style>

@@ -75,7 +75,6 @@ import { LoadMoreState } from "wot-design-uni/components/wd-loadmore/types";
 import { DropMenuItemExpose } from "wot-design-uni/components/wd-drop-menu-item/types";
 
 import LogAPI, { LogVO, LogPageQuery } from "@/api/system/log";
-import CuDateQuery from "@/components/cu-date-query/index.vue";
 
 const filterDropMenu = ref<DropMenuItemExpose>();
 const loadMoreState = ref<LoadMoreState>("loading");

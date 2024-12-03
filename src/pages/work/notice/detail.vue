@@ -9,7 +9,7 @@
         <div class="notice-meta">
           <div class="meta-row">
             优先级：
-            <dict-label code="notice_level" :model-value="noticeDetail.level" />
+            <cu-dict-label code="notice_level" :model-value="noticeDetail.level" />
           </div>
           <div class="meta-row">发布人：{{ noticeDetail.publisherName }}</div>
           <div class="meta-row">发布时间：{{ noticeDetail.publishTime }}</div>
@@ -22,27 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import type { NoticeDetailVO } from "@/api/system/notice";
-import NoticeAPI from "@/api/system/notice";
+import NoticeAPI, { NoticeDetailVO } from "@/api/system/notice";
 
 const noticeDetail = ref<NoticeDetailVO>({});
-
-const getLevelText = (level?: string) => {
-  const textMap: Record<string, string> = {
-    L: "低",
-    M: "中",
-    H: "高",
-  };
-  return textMap[level || "L"];
-};
-const getLevelType = (level?: string): "primary" | "warning" | "danger" => {
-  const typeMap: Record<string, "primary" | "warning" | "danger"> = {
-    L: "primary",
-    M: "warning",
-    H: "danger",
-  };
-  return typeMap[level || "L"];
-};
 
 /**
  * 获取通知详情
@@ -51,13 +33,13 @@ const getLevelType = (level?: string): "primary" | "warning" | "danger" => {
 const getNoticeDetail = async (id: string) => {
   try {
     const res = await NoticeAPI.getDetail(id);
-    console.log(res);
     noticeDetail.value = res;
   } catch (error) {
     console.error("获取通知详情失败：", error);
   }
 };
 
+// 页面加载
 onLoad((options: any) => {
   if (options && options.id) {
     getNoticeDetail(options.id as string);

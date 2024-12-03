@@ -162,9 +162,6 @@ import UserAPI, { type UserPageQuery, UserPageVO, UserForm } from "@/api/system/
 import RoleAPI from "@/api/system/role";
 import DeptAPI from "@/api/system/dept";
 
-import CuPicker from "@/components/cu-picker/index.vue";
-import CuDateQuery from "@/components/cu-date-query/index.vue";
-
 const message = useMessage();
 const loadMoreState = ref<LoadMoreState>("loading");
 const filterDropMenu = ref();

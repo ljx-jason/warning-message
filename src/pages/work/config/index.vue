@@ -21,7 +21,7 @@
       </wd-drop-menu-item>
     </wd-drop-menu>
 
-    <view class="mt-20rpx">
+    <view class="data-container">
       <!-- 列表内容 -->
       <view v-for="(item, index) in pageData" :key="index" class="mb-20rpx">
         <wd-card>
@@ -31,32 +31,11 @@
             </view>
           </template>
 
-          <wd-row class="mb-20rpx">
-            <wd-col :span="24">
-              <wd-col :span="5">
-                <view>配置键：</view>
-              </wd-col>
-              <wd-col :span="19">
-                <view>{{ item.configKey || "-" }}</view>
-              </wd-col>
-            </wd-col>
-            <wd-col :span="24">
-              <wd-col :span="5">
-                <view>配置值：</view>
-              </wd-col>
-              <wd-col :span="19">
-                <view>{{ item.configValue || "-" }}</view>
-              </wd-col>
-            </wd-col>
-            <wd-col :span="24">
-              <wd-col :span="5">
-                <view>备注：</view>
-              </wd-col>
-              <wd-col :span="19">
-                <view>{{ item.remark || "-" }}</view>
-              </wd-col>
-            </wd-col>
-          </wd-row>
+          <wd-cell-group>
+            <wd-cell title="配置键" :value="item.configKey" />
+            <wd-cell title="配置值" :value="item.configValue" />
+            <wd-cell title="备注" :value="item.remark" />
+          </wd-cell-group>
 
           <template #footer>
             <wd-button size="small" plain type="primary" @click="handleAction(item)">
@@ -194,6 +173,8 @@ async function submitForm() {
   } catch (error) {
     uni.showToast({ title: "操作失败", icon: "error" });
     loading.value = false;
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -239,11 +220,11 @@ function loadmore() {
  * 添加
  */
 function handleOpenDialog() {
-  form.id = undefined;
-  form.configName = "";
-  form.configKey = "";
-  form.configValue = "";
-  form.remark = "";
+  form.value.id = undefined;
+  form.value.configName = "";
+  form.value.configKey = "";
+  form.value.configValue = "";
+  form.value.remark = "";
   showEditPopup.value = true;
 }
 
@@ -311,3 +292,33 @@ onLoad(() => {
   handleQuery();
 });
 </script>
+<style lang="scss" scoped>
+.data-container {
+  :deep(.wd-cell__wrapper) {
+    padding: 4rpx 0;
+  }
+
+  :deep(.wd-cell) {
+    padding-right: 10rpx;
+    background: #f8f8f8;
+  }
+
+  :deep(.wd-fab__trigger) {
+    width: 80rpx !important;
+    height: 80rpx !important;
+  }
+
+  :deep(.wd-cell__right) {
+    flex: 2;
+  }
+
+  .filter-container {
+    padding: 10rpx;
+    background: #fff;
+  }
+
+  .data-container {
+    margin-top: 20rpx;
+  }
+}
+</style>
