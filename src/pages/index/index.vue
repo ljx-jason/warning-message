@@ -40,18 +40,24 @@
 
     <!-- 数据统计 -->
     <wd-grid :column="2" :gutter="2">
-      <wd-grid-item
-        v-for="(item, index) in visitStatsData"
-        :key="index"
-        use-slot
-        custom-class="custom-item"
-      >
+      <wd-grid-item use-slot custom-class="custom-item">
         <view class="flex justify-start pl-5">
           <view class="flex-center">
-            <image class="w-80rpx h-80rpx rounded-8rpx" :src="item.icon" />
+            <image class="w-80rpx h-80rpx rounded-8rpx" src="/static/icons/visitor.png" />
             <view class="ml-5 text-left">
-              <view class="font-bold">{{ item.title }}</view>
-              <view class="mt-2">{{ item.todayCount }}</view>
+              <view class="font-bold">访客数</view>
+              <view class="mt-2">{{ visitStatsData.todayUvCount }}</view>
+            </view>
+          </view>
+        </view>
+      </wd-grid-item>
+      <wd-grid-item use-slot custom-class="custom-item">
+        <view class="flex justify-start pl-5">
+          <view class="flex-center">
+            <image class="w-80rpx h-80rpx rounded-8rpx" src="/static/icons/browser.png" />
+            <view class="ml-5 text-left">
+              <view class="font-bold">浏览量</view>
+              <view class="mt-2">{{ visitStatsData.todayPvCount }}</view>
             </view>
           </view>
         </view>
@@ -111,40 +117,14 @@ interface VisitStats {
 
 const current = ref<number>(0);
 
-const visitStatsData = ref<VisitStats[] | null>([
-  {
-    type: "online",
-    title: "在线用户数",
-    icon: "/static/icons/user2.png",
-    growthRate: 0,
-    granularity: "-",
-    todayCount: 1,
-  },
-  {
-    type: "pv",
-    title: "浏览量(PV)",
-    icon: "/static/icons/stat1.png",
-    growthRate: 0,
-    granularity: "日",
-    todayCount: 0,
-  },
-  {
-    type: "uv",
-    title: "访客数(UV)",
-    icon: "/static/icons/visitor.png",
-    growthRate: 0,
-    granularity: "日",
-    todayCount: 0,
-  },
-  {
-    type: "ip",
-    title: "访问IP数",
-    icon: "/static/icons/stat4.png",
-    growthRate: 0,
-    granularity: "日",
-    todayCount: 0,
-  },
-]);
+const visitStatsData = ref<VisitStatsVO>({
+  todayUvCount: 0,
+  uvGrowthRate: 0,
+  totalUvCount: 0,
+  todayPvCount: 0,
+  pvGrowthRate: 0,
+  totalPvCount: 0,
+});
 
 // 图表数据
 const chartData = ref({});
@@ -157,7 +137,7 @@ const swiperList = ref(["https://oss.youlai.tech/blog/banner9.png"]);
 // 快捷导航列表
 const navList = reactive([
   {
-    icon: "/static/icons/user1.png",
+    icon: "/static/icons/user.png",
     title: "用户管理",
     url: "/pages/work/user/index",
     prem: "sys:user:query",
@@ -191,14 +171,8 @@ function onChange(e: any) {
 
 // 加载访问统计数据
 const loadVisitStatsData = async () => {
-  const list: VisitStatsVO[] = await LogAPI.getVisitStats();
-
-  visitStatsData.value?.forEach((item) => {
-    const data = list.find((v) => v.type === item.type);
-    if (data) {
-      item.todayCount = data.todayCount;
-      item.growthRate = data.growthRate;
-    }
+  LogAPI.getVisitStats().then((data) => {
+    visitStatsData.value = data;
   });
 };
 

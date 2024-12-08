@@ -28,7 +28,7 @@ const gridList = reactive([
     title: "系统管理",
     children: [
       {
-        icon: "/static/icons/user1.png",
+        icon: "/static/icons/user.png",
         title: "用户管理",
         url: "/pages/work/user/index",
         prem: "sys:user:query",
