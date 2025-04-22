@@ -10,8 +10,8 @@ export const useDictStore = defineStore("dict", () => {
   };
 
   const loadDictionaries = async () => {
-    const dictList = await DictAPI.getList();
-    dictList.forEach(setDictionary);
+    // const dictList = await DictAPI.getList();
+    // dictList.forEach(setDictionary);
   };
 
   const getDictionary = (dictCode: string): DictData[] => {

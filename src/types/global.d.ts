@@ -33,8 +33,8 @@ declare global {
    * 响应数据
    */
   interface ResponseData<T = any> {
-    code: string;
-    data: T;
+    status: string;
+    data?: T;
     msg: string;
   }
 }

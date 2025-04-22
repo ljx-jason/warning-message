@@ -18,14 +18,13 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
       },
       success: (response) => {
         console.log("success response", response);
-        const resData = response.data as ResponseData<T>;
+        const resData = response.data
 
-        // 业务状态码 00000 表示成功
-        if (resData.code === ResultCodeEnum.SUCCESS) {
-          resolve(resData.data);
+        if (response.statusCode === 200) {
+          resolve(resData);
         }
         // 令牌失效或过期处理
-        else if (resData.code === ResultCodeEnum.TOKEN_INVALID) {
+        else if (resData.status === ResultCodeEnum.TOKEN_INVALID) {
           console.log("令牌失效或过期处理");
           clearAll();
           // 跳转到登录页
@@ -40,7 +39,7 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
           });
           reject({
             message: resData.msg || "业务处理失败",
-            code: resData.code,
+            code: resData.status,
           });
         }
       },

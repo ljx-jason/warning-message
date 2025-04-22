@@ -5,14 +5,14 @@ export const enum ResultCodeEnum {
   /**
    * 成功
    */
-  SUCCESS = "00000",
+  SUCCESS = "0",
   /**
    * 错误
    */
-  ERROR = "B0001",
+  ERROR = "1",
 
   /**
    * 令牌无效或过期
    */
-  TOKEN_INVALID = "A0230",
+  TOKEN_INVALID = "401",
 }
