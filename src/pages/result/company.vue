@@ -12,17 +12,10 @@
             </view>
           </view>
           <view class="top-basic">
-            <view class="top-desc">
-              <view class="item">姓名：{{ nineData.idName || "" }}</view>
-              <view class="item">证件号：{{ resultData.idNo || "" }}</view>
-              <view class="item">性别：{{ resultData.sex || "" }}</view>
-              <view class="item">证件类型：{{ resultData.cardType || "" }}</view>
-              <view class="item">年龄：{{ resultData.age || "" }}</view>
-              <view class="item">证件期限：{{ resultData.cardTerm || "" }}</view>
-              <view class="item">职业：{{ resultData.vocation || "" }}</view>
-              <view class="item">联系方式：{{ resultData.phone || "" }}</view>
-            </view>
-            <view>联系地址：{{ resultData.contAddress || "" }}</view>
+            <view>名称：{{ nineData.idName || "" }}</view>
+            <view>经营范围：{{ resultData.idNo || "" }}</view>
+            <view>地址：{{ resultData.contAddress || "" }}</view>
+            <view>证件号：{{ resultData.contAddress || "" }}</view>
           </view>
         </view>
         <view class="message">
@@ -48,9 +41,9 @@
               <view class="title">产品营销</view>
             </view>
             <view class="bottom">
-              <wd-table :data="cp_arr" :height="300" :border="false">
-                <wd-table-col prop="mktName" label="产品名称" width="155"></wd-table-col>
-                <wd-table-col prop="isDeal" label="是否办理" width="155"></wd-table-col>
+              <wd-table :data="cp_arr" :height="300">
+                <wd-table-col prop="mktName" label="产品名称"></wd-table-col>
+                <wd-table-col prop="isDeal" label="是否办理"></wd-table-col>
               </wd-table>
             </view>
           </view>
@@ -60,7 +53,7 @@
               <view class="title">指标营销</view>
             </view>
             <view class="bottom">
-              <wd-table :data="zb_arr" :height="300" :border="false">
+              <wd-table :data="zb_arr" :height="300">
                 <wd-table-col prop="mktName" label="指标名称"></wd-table-col>
                 <wd-table-col prop="isDeal" label="是否满足"></wd-table-col>
                 <wd-table-col prop="currBal" label="当前余额"></wd-table-col>
@@ -70,189 +63,6 @@
           </view>
         </view>
         <view v-else>
-          <view class="message">
-            <view class="top">
-              <view class="icon"></view>
-              <view class="title">手机号码三要素</view>
-              <wd-tag class="ml-10rpx" plain :type="resultData?.mobileVerifyData?.mobileVerifyResult.slice(
-                0,
-                4
-              ) == '查询成功'
-                ? 'success'
-                : 'danger'
-                " size="small">{{
-                  resultData?.mobileVerifyData?.mobileVerifyResult.slice(0, 4)
-                }}</wd-tag>
-            </view>
-            <view class="bottom">
-              <view class="item">
-                验证结果:
-                <wd-text :type="resultData?.mobileVerifyData?.threeCheckResult == '全匹配'
-                  ? 'success'
-                  : 'error'
-                  " :text="resultData?.mobileVerifyData?.threeCheckResult"></wd-text>
-              </view>
-              <view class="item">
-                运营商:{{ resultData?.mobileVerifyData?.operator || "" }}
-              </view>
-            </view>
-            <view class="lastDesc">
-              <wd-input class="flex-1" clearable v-model="unMatched" placeholder="若验证结果不是全匹配，柜员需填写说明..." />
-              <wd-button type="success" :round="false" size="small" @click="unMatchedDesc">保存</wd-button>
-            </view>
-          </view>
-          <view class="message">
-            <view class="top">
-              <view class="icon"></view>
-              <view class="title">云互联</view>
-              <wd-tag class="ml-10rpx" plain :type="resultData?.interCloudData?.interCloudResult == '查询成功'
-                ? 'success'
-                : 'danger'
-                " size="small">{{
-                  resultData?.interCloudData?.interCloudResult || ""
-                }}</wd-tag>
-            </view>
-            <view class="bottom clound">
-              <view class="left">
-                <view class="item">
-                  <img v-if="resultData?.interCloudData?.openCode == '红码'" src="/static/images/hongma.jpg" />
-                  <img v-else-if="resultData?.interCloudData?.openCode == '绿码'" src="/static/images/lvma.jpg" />
-                  <img v-else src="/static/images/huangma.jpg" />
-                </view>
-              </view>
-              <view class="right">
-                {{ resultData?.interCloudData?.openExceptCodeReason || "" }}
-              </view>
-            </view>
-
-            <view class="lastDesc">
-              <wd-input class="flex-1" clearable v-model="interCloudRecord" placeholder="此处填写备注说明..." />
-              <wd-button type="success" :round="false" size="small" @click="cloudDesc">保存</wd-button>
-            </view>
-            <view class="lastDesc">
-              <wd-picker class="flex-1" :columns="columnStatus" label="办理结果" v-model="status"
-                @confirm="handleConfirmStatus" />
-              <wd-button type="success" :round="false" size="small" @click="feedResult">保存</wd-button>
-            </view>
-          </view>
-          <view class="message">
-            <view class="top">
-              <view class="icon"></view>
-              <view class="title">开户码</view>
-              <wd-tag class="ml-10rpx" plain :type="resultData?.interCloudData?.interCloudResult == '查询成功'
-                ? 'success'
-                : 'danger'
-                " size="small">{{
-                  resultData?.interCloudData?.interCloudResult || ""
-                }}</wd-tag>
-            </view>
-            <view class="bottom open-code">
-              <view class="left">
-                <view>
-                  <wd-text v-if="resultData?.interCloudData?.isAccountsInvolvedRecord === '是'" type="error" text="是"
-                    size="18px"></wd-text>
-                  <wd-text v-else type="success" text="否" size="18px"></wd-text>
-                </view>
-                <view>
-                  <wd-text text="名下是否有涉案账户" size="14px"></wd-text>
-                </view>
-              </view>
-              <view class="right">
-                <view>
-                  <wd-text v-if="resultData?.interCloudData?.isAccountsCrossRecord === '是'" type="error" text="是"
-                    size="18px"></wd-text>
-                  <wd-text v-else type="success" text="否" size="18px"></wd-text>
-                </view>
-                <view>
-                  <wd-text text="是否为涉诈联合惩戒对象" size="14px"></wd-text>
-                </view>
-              </view>
-            </view>
-          </view>
-          <view class="message">
-            <view class="top">
-              <view class="icon"></view>
-              <view class="title">两卡风险校验</view>
-              <wd-tag class="ml-10rpx" plain :type="resultData?.riskVerifyData?.riskVerifyResult == '查询成功'
-                ? 'success'
-                : 'danger'
-                " size="small">{{
-                  resultData?.riskVerifyData?.riskVerifyResult || ""
-                }}</wd-tag>
-            </view>
-            <view class="bottom">
-              <view class="tag-box">
-                <text :class="resultData?.riskVerifyData?.highRiskCustomer == '是'
-                  ? 'cur'
-                  : ''
-                  ">高危客户：{{
-                    resultData?.riskVerifyData?.highRiskCustomer || ""
-                  }}</text>
-                <text :class="resultData?.riskVerifyData?.doubtHighRiskCustomer == '是'
-                  ? 'cur'
-                  : ''
-                  ">疑似高危客户：{{
-                    resultData?.riskVerifyData?.doubtHighRiskCustomer || ""
-                  }}</text>
-                <text :class="resultData?.riskVerifyData?.isUnify == '否' ? 'cur' : ''
-                  ">是否统一：{{
-                    resultData?.riskVerifyData?.isUnify || ""
-                  }}</text>
-                <text>常住人口：{{
-                  resultData?.riskVerifyData?.permPeople || ""
-                }}</text>
-                <text :class="resultData?.riskVerifyData?.floatPeople == '是' ? 'cur' : ''
-                  ">流动人口：{{
-                    resultData?.riskVerifyData?.floatPeople || ""
-                  }}</text>
-                <text>是否新开卡：{{
-                  resultData?.riskVerifyData?.newOpenCard || ""
-                }}</text>
-                <text>一人多卡互译：{{
-                  resultData?.riskVerifyData?.peopleMutualCardTrans || ""
-                }}</text>
-                <text>社保：{{
-                  resultData?.riskVerifyData?.socialSecurity || ""
-                }}</text>
-                <text :class="resultData?.riskVerifyData?.bankRiskMode == '是'
-                  ? 'cur'
-                  : ''
-                  ">银行风险模型：{{
-                    resultData?.riskVerifyData?.bankRiskMode || ""
-                  }}</text>
-                <text>手机号活跃度：{{
-                  resultData?.riskVerifyData?.phoneActivity || ""
-                }}</text>
-                <text>开卡活跃度全省等级：{{
-                  resultData?.riskVerifyData?.provCardActivity || ""
-                }}</text>
-                <text>开卡活跃度全国等级：{{
-                  resultData?.riskVerifyData?.contCardActivity || ""
-                }}</text>
-                <text :class="resultData?.riskVerifyData?.bankControl ? 'cur' : ''">银行管控：{{
-                  resultData?.riskVerifyData?.bankControl || ""
-                }}</text>
-                <text :class="resultData?.riskVerifyData?.policeVerifycur ? 'cur' : ''
-                  ">公安核查：{{
-                    resultData?.riskVerifyData?.policeVerify || ""
-                  }}</text>
-              </view>
-            </view>
-            <wd-card>
-              <view class="flex pt-10px mb-10px">
-                <wd-text text="是否取现异常" color="#333" class="pl-15px pr-15px"></wd-text>
-                <wd-radio-group shape="dot" inline checked-color="#00C192" v-model="qx.qxSfyc">
-                  <wd-radio value="1">是</wd-radio>
-                  <wd-radio value="2">否</wd-radio>
-                </wd-radio-group>
-              </view>
-              <wd-input label="取现金额" clearable v-model="qx.qxJe" placeholder="取现金额..." />
-              <wd-textarea label="异常说明" auto-height clearable v-model="qx.qxYcsm" placeholder="异常说明..." />
-              <template #footer>
-                <wd-button type="success" :round="false" size="small" @click="onSubmitQxYcsm">保存</wd-button>
-              </template>
-            </wd-card>
-          </view>
           <view class="message">
             <view class="top">
               <view class="icon"></view>
@@ -306,14 +116,14 @@
           </view>
           <view class="footer">
             <wd-button icon="thin-arrow-left" type="info" @click="goBack">返回主页</wd-button>
-            <wd-button icon="edit-outline" type="success" @click="submit">核实</wd-button>
+            <!-- <wd-button icon="edit-outline" type="success" @click="submit">核实</wd-button> -->
           </view>
         </view>
       </view>
       <wd-popup v-model="show" closable :close-on-click-overlay="false"
         custom-style="width: 90%; height: 90%; paddingTop: 30px;">
         <view class="p-10px">
-          <wd-table :data="detailList" :height="300" :border="false">
+          <wd-table :data="detailList" :height="300">
             <wd-table-col prop="idNo" label="身份证号"></wd-table-col>
             <wd-table-col prop="accountNo" label="账号"></wd-table-col>
             <wd-table-col prop="cardNum" label="卡号"></wd-table-col>
@@ -327,27 +137,27 @@
             <wd-table-col prop="provBankSugstLmt" label="省行建议限额(日)"></wd-table-col>
           </wd-table>
           <view class="tit">手机是否重复：{{ isPhoneSame }}</view>
-          <wd-table :data="ratainPhoneVerifys" :height="300" :border="false">
+          <wd-table :data="ratainPhoneVerifys" :height="300">
             <wd-table-col prop="retainPhone" label="手机号码"></wd-table-col>
             <wd-table-col prop="idNo" label="证件号"></wd-table-col>
             <wd-table-col prop="custName" label="客户名称"></wd-table-col>
           </wd-table>
           <view class="tit">假名匿名列表</view>
-          <wd-table :data="assFalseHideNames" :height="300" :border="false">
+          <wd-table :data="assFalseHideNames" :height="300">
             <wd-table-col prop="codeName" label="内码名称"></wd-table-col>
             <wd-table-col prop="certName" label="证件名称"></wd-table-col>
             <wd-table-col prop="acctName" label="账户名称"></wd-table-col>
             <wd-table-col prop="acctNo" label="对应账户"></wd-table-col>
           </wd-table>
           <view class="tit">一证多码：{{ isYzdm }}</view>
-          <wd-table :data="yzdmList" :height="300" :border="false">
+          <wd-table :data="yzdmList" :height="300">
             <wd-table-col prop="idNoStr" label="证件号"></wd-table-col>
             <wd-table-col prop="csnoStr" label="内码"></wd-table-col>
             <wd-table-col prop="acctName" label="账户名称"></wd-table-col>
             <wd-table-col prop="acctNo" label="对应账户"></wd-table-col>
           </wd-table>
           <view class="tit">一码多证：{{ isYmdz }}</view>
-          <wd-table :data="ymdzList" :height="300" :border="false">
+          <wd-table :data="ymdzList" :height="300">
             <wd-table-col prop="idNoStr" label="内码"></wd-table-col>
             <wd-table-col prop="csnoStr" label="证件号"></wd-table-col>
           </wd-table>
@@ -355,7 +165,7 @@
             <text class="mr-10px">可疑账户共享</text><wd-button type="success" size="small" :round="false"
               @click="handleAdd">新增</wd-button>
           </view>
-          <wd-table :data="doubtListShare" :height="300" :border="false">
+          <wd-table :data="doubtListShare" :height="300">
             <wd-table-col prop="createTime" label="导入时间"></wd-table-col>
             <wd-table-col prop="cardName" label="客户姓名"></wd-table-col>
             <wd-table-col prop="cardId" label="证件号"></wd-table-col>
@@ -395,6 +205,11 @@ watch(isChecked, (newVal) => {
     getMktInfoLists()
   }
 })
+const toFeedBack = () => {
+  let obj = { idName: nineData.value.idName, idNo: resultData.idNo, sex: resultData.sex, cardType: resultData.cardType, age: resultData.age, cardTerm: resultData.cardTerm, vocation: resultData.vocation, phone: resultData.phone, contAddress: resultData.contAddress };
+  uni.setStorageSync('resultData', obj);
+  uni.navigateTo({ url: '/pages/feedback/index' })
+}
 // 营销信息展示
 const getMktInfoLists = () => {
   MainAPI.getMktInfoList({
@@ -645,12 +460,7 @@ const feedResult = () => {
 const showManual = ref(false)
 const submit = () => {
   // showManual.value = true
-  uni.navigateTo({ url: '/pages/handle/index?uuid=' + resultData.uuid })
-}
-const toFeedBack = () => {
-  let obj = { idName: nineData.value.idName, idNo: resultData.idNo, sex: resultData.sex, cardType: resultData.cardType, age: resultData.age, cardTerm: resultData.cardTerm, vocation: resultData.vocation, phone: resultData.phone, contAddress: resultData.contAddress };
-  uni.setStorageSync('resultData', obj);
-  uni.navigateTo({ url: '/pages/feedback/index' })
+  uni.navigateTo({ url: '/pages/handle/company?uuid=' + resultData.uuid })
 }
 const closePopup = () => {
   showManual.value = false
@@ -693,9 +503,8 @@ const goBack = () => {
     .top {
       position: relative;
       display: flex;
-      align-items: center;
       margin-top: 30rpx;
-      // line-height: 1.4;
+      line-height: 1.4;
     }
 
     .icon {
@@ -786,7 +595,12 @@ const goBack = () => {
         text-align: center;
         border: 1px solid #00C192;
         border-radius: 8px;
+      }
 
+      &-item {
+        padding: 20rpx;
+        color: #ee0a24 !important;
+        border: 1px solid #c12d00 !important;
       }
 
       .cur {
@@ -794,14 +608,11 @@ const goBack = () => {
       }
     }
 
-    .tag-box-item {
-      // color: #fff !important;
-      // background-color: #FA4350;
-      // border: 1px solid #FA4350 !important;
-      padding: 20rpx;
-      color: #ee0a24 !important;
-      border: 1px solid #c12d00 !important;
-    }
+    // .tag-box-item {
+    //   color: #fff !important;
+    //   background-color: #FA4350;
+    //   border: 1px solid #FA4350 !important;
+    // }
 
     :deep(.wd-card) {
       margin-top: 10px;
@@ -841,26 +652,6 @@ const goBack = () => {
 
   .wd-button.is-primary {
     background: linear-gradient(90deg, #3179CD 0%, #17BA7A 100%);
-  }
-}
-
-:deep(.wd-popup) {
-  overflow: hidden;
-  border-radius: 16rpx !important;
-}
-
-.open-code {
-  display: flex;
-  align-items: center;
-
-  .left,
-  .right {
-    flex: 1;
-    height: 100rpx;
-    // padding: 20rpx;
-    text-align: center;
-    border-radius: 10rpx;
-    box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.1);
   }
 }
 </style>

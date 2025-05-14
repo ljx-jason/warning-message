@@ -40,7 +40,7 @@
             <view><img src="/static/images/audit.png" alt="" /><span>业务种类</span></view>
           </view>
           <wd-checkbox-group v-model="kindResult" checked-color="#00C192" inline @change="kindResultChange">
-            <wd-checkbox v-for="item in kindData" :modelValue="item.value" @click="itemClick(item)">{{ item.label
+            <wd-checkbox v-for="item in kindData" :modelValue="item.value" @click="itemClick()">{{ item.label
             }}</wd-checkbox>
             <view class="last">
               <wd-checkbox modelValue="l">其他</wd-checkbox>
@@ -53,7 +53,7 @@
             <view><img src="/static/images/audit.png" alt="" /><span>办理目的</span></view>
           </view>
           <wd-checkbox-group v-model="handleGoal" checked-color="#00C192" inline>
-            <wd-checkbox v-for="item in handleData" :modelValue="item.value" @click="itemClick(item)">{{ item.label
+            <wd-checkbox v-for="item in handleData" :modelValue="item.value" @click="itemClick()">{{ item.label
             }}</wd-checkbox>
             <view class="lasts">
               <wd-checkbox modelValue="5">工资代发</wd-checkbox>
@@ -161,15 +161,28 @@ const reset = () => {
     ruleFormRef.value?.reset();
   });
 }
+interface ValidateResult {
+  valid: boolean;
+}
+interface BasicInfoResponse {
+  status: number;
+  msg?: string;
+  data?: {
+    idName: string;
+    phone: string;
+    idNo: string;
+  };
+}
 const search = async () => {
-  ruleFormRef.value.validate().then(async ({ valid }) => {
+  ruleFormRef.value.validate().then(async (res: ValidateResult) => {
+    const { valid } = res;
     if (valid) {
       if (ruleForm.cardNum) {
-        let data = await MainAPI.getBasicInfoList({ cardNum: ruleForm.cardNum });
+        let data = await MainAPI.getBasicInfoList({ cardNum: ruleForm.cardNum }) as BasicInfoResponse;
         if (data.status == 0) {
-          ruleForm.cardName = data.data.idName;
-          ruleForm.phone = data.data.phone;
-          ruleForm.cardId = data.data.idNo;
+          ruleForm.cardName = data.data?.idName || "";
+          ruleForm.phone = data.data?.phone || "";
+          ruleForm.cardId = data.data?.idNo || "";
         } else {
           uni.showToast({
             title: data.msg,
@@ -247,8 +260,8 @@ const search = async () => {
 const checkRule = () => {
   let failMsg: string[] = [];
   searchResult.value.forEach((item) => {
-    if (item.grayColor) {
-      failMsg.push(`<${item.label}>\n`);
+    if (item?.grayColor) {
+      failMsg.push(`<${item?.label}>\n`);
     }
   });
   if (failMsg.length > 0) {
@@ -350,8 +363,8 @@ const checkRule = () => {
 const checked = ref(false)
 const scan = ref(true)
 const disabled = ref(false)
-const kindResult = ref([])
-const handleGoal = ref([])
+const kindResult = ref<string[]>([])
+const handleGoal = ref<string[]>([])
 const searchResult = ref([])
 const kindData = ref([
   { label: "新开户", value: "a" },
@@ -398,9 +411,15 @@ const customUpload = async (file: any) => {
     title: '正在识别身份证信息...',
     mask: true,
   });
-
-  const data = await MainAPI.getIdCardInfo(formData);
-  if (data.data) {
+  interface IdCardInfoResponse {
+    data?: {
+      idNo: string;
+      name: string;
+    };
+    [key: string]: any; // 其他可能字段
+  }
+  const data = await MainAPI.getIdCardInfo(formData) as IdCardInfoResponse
+  if (data?.data) {
     ruleForm.cardId = data.data.idNo;
     ruleForm.cardName = data.data.name;
   }

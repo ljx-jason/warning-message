@@ -27,7 +27,25 @@
       }
     },
     {
+      "path": "pages/result/company",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/feedback/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/handle/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/handle/company",
       "style": {
         "navigationStyle": "custom"
       }
